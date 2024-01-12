@@ -18,7 +18,6 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(length = 36,columnDefinition = "varchar(36)", updatable = false,nullable = false)
     @Column(length = 36, updatable = false, nullable = false)
     private Long id;
 
@@ -32,9 +31,7 @@ public class Category {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
-    private Set<Subcategory> subCategories;
 }

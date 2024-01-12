@@ -30,9 +30,9 @@ public class Subcategory {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Category category;
 }
