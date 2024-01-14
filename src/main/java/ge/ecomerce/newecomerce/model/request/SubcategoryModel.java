@@ -1,4 +1,4 @@
-package ge.ecomerce.newecomerce.model;
+package ge.ecomerce.newecomerce.model.request;
 
 import lombok.Getter;
 

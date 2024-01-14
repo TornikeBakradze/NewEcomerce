@@ -2,12 +2,15 @@ package ge.ecomerce.newecomerce.serviceImpl;
 
 import ge.ecomerce.newecomerce.entity.category.Category;
 import ge.ecomerce.newecomerce.exception.DataNotFoundException;
-import ge.ecomerce.newecomerce.model.CategoryModel;
+import ge.ecomerce.newecomerce.model.request.CategoryModel;
+import ge.ecomerce.newecomerce.model.respone.CategoryWithSubcategories;
 import ge.ecomerce.newecomerce.repository.CategoryRepository;
+import ge.ecomerce.newecomerce.repository.SubcategoryRepository;
 import ge.ecomerce.newecomerce.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,6 +18,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final SubcategoryRepository subcategoryRepository;
 
     @Override
     public List<Category> getAll() {
@@ -76,4 +80,43 @@ public class CategoryServiceImpl implements CategoryService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public CategoryWithSubcategories categoryWithSubcategoryByCategoryID(Long categoryID) {
+        try {
+            Category category = categoryRepository.findById(categoryID).
+                    orElseThrow(() -> new DataNotFoundException("No category found"));
+            List<String> subCategories = subcategoryRepository.getCategoryWithSubCategoryByID(categoryID);
+            if (subCategories.isEmpty()) {
+                throw new DataNotFoundException(String.format("%s subcategories not found", category.getName()));
+            }
+            return new CategoryWithSubcategories(category.getName(), subCategories);
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<CategoryWithSubcategories> categoryWithSubcategoryByCategories() {
+        try {
+            List<CategoryWithSubcategories> categoryWithSubcategoriesList = new ArrayList<>();
+            List<Category> categoryList = categoryRepository.findAll();
+            if (categoryList.isEmpty())
+                throw new DataNotFoundException("No category found");
+            for (Category category : categoryList) {
+                List<String> subCategories =
+                        subcategoryRepository.getCategoryWithSubCategoryByID(category.getId());
+
+                CategoryWithSubcategories categoryWithSubcategories =
+                        new CategoryWithSubcategories(category.getName(), subCategories);
+                categoryWithSubcategoriesList.add(categoryWithSubcategories);
+            }
+            return categoryWithSubcategoriesList;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

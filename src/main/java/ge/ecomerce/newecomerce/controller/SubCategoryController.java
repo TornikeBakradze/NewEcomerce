@@ -1,7 +1,7 @@
 package ge.ecomerce.newecomerce.controller;
 
 import ge.ecomerce.newecomerce.entity.category.Subcategory;
-import ge.ecomerce.newecomerce.model.SubcategoryModel;
+import ge.ecomerce.newecomerce.model.request.SubcategoryModel;
 import ge.ecomerce.newecomerce.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -3,7 +3,7 @@ package ge.ecomerce.newecomerce.serviceImpl;
 import ge.ecomerce.newecomerce.entity.category.Category;
 import ge.ecomerce.newecomerce.entity.category.Subcategory;
 import ge.ecomerce.newecomerce.exception.DataNotFoundException;
-import ge.ecomerce.newecomerce.model.SubcategoryModel;
+import ge.ecomerce.newecomerce.model.request.SubcategoryModel;
 import ge.ecomerce.newecomerce.repository.CategoryRepository;
 import ge.ecomerce.newecomerce.repository.SubcategoryRepository;
 import ge.ecomerce.newecomerce.service.SubCategoryService;
@@ -38,6 +38,12 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     }
 
     @Override
+    public Subcategory getSubCategoryByName(String name) {
+        return subcategoryRepository.findByName(name).
+                orElseThrow(() -> new DataNotFoundException(String.format("%s category not found", name)));
+    }
+
+    @Override
     public String saveSubCategory(SubcategoryModel subcategoryModel) {
         try {
             Optional<Category> category = categoryRepository.findById(subcategoryModel.getCategoryID());
@@ -52,14 +58,9 @@ public class SubCategoryServiceImpl implements SubCategoryService {
             return "Sub Category added successfully";
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityViolationException("Not correct field.");
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Subcategory getSubCategoryByName(String name) {
-        return subcategoryRepository.findByName(name).orElseThrow(() -> new DataNotFoundException(String.format("%s category not found", name)));
     }
 
     @Override
@@ -72,7 +73,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
             return String.format("Category with %s id deleted successfully", id);
         } catch (DataNotFoundException e) {
             throw new DataNotFoundException(e.getMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -92,7 +93,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
             return subcategory;
         } catch (DataNotFoundException e) {
             throw new DataNotFoundException(e.getMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

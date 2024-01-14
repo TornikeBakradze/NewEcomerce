@@ -2,10 +2,9 @@ package ge.ecomerce.newecomerce.service;
 
 
 import ge.ecomerce.newecomerce.entity.category.Subcategory;
-import ge.ecomerce.newecomerce.model.SubcategoryModel;
+import ge.ecomerce.newecomerce.model.request.SubcategoryModel;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface SubCategoryService {
     List<Subcategory> getAll();

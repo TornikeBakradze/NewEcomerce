@@ -1,8 +1,8 @@
 package ge.ecomerce.newecomerce.service;
 
 import ge.ecomerce.newecomerce.entity.category.Category;
-import ge.ecomerce.newecomerce.entity.category.Subcategory;
-import ge.ecomerce.newecomerce.model.CategoryModel;
+import ge.ecomerce.newecomerce.model.request.CategoryModel;
+import ge.ecomerce.newecomerce.model.respone.CategoryWithSubcategories;
 
 import java.util.List;
 
@@ -16,5 +16,9 @@ public interface CategoryService {
     Category saveCategory(CategoryModel categoryModel);
 
     String delete(Long id);
+
+    CategoryWithSubcategories categoryWithSubcategoryByCategoryID(Long categoryID);
+
+    List<CategoryWithSubcategories> categoryWithSubcategoryByCategories();
 }
 

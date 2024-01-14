@@ -1,5 +1,6 @@
 package ge.ecomerce.newecomerce.entity.category;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,7 +32,10 @@ public class Category {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Subcategory> subcategories;
 }
