@@ -20,10 +20,10 @@ public class BoostrapData implements CommandLineRunner {
     private void loadCategory(){
         if ((categoryRepository.count() == 0)) {
             Category category1 = Category.builder()
-                    .name("House and garden")
+                    .name("Houseandgarden")
                     .build();
             Category category2 = Category.builder()
-                    .name("home appliances")
+                    .name("homeappliances")
                     .build();
             Category category3 = Category.builder()
                     .name("Technic")

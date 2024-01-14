@@ -2,6 +2,9 @@ package ge.ecomerce.newecomerce.entity.category;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -33,9 +36,12 @@ public class Category {
     private Timestamp lastModifiedDate;
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Category name must not be null")
+    @Size(max = 50, message = "Category name size must be 0 to 50")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Subcategory name must contain only letters")
     private String name;
 
-    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Subcategory> subcategories;
 }

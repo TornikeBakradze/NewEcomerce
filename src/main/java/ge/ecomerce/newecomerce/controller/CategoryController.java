@@ -1,12 +1,14 @@
 package ge.ecomerce.newecomerce.controller;
 
 import ge.ecomerce.newecomerce.entity.category.Category;
+import ge.ecomerce.newecomerce.model.request.CategoriesModel;
 import ge.ecomerce.newecomerce.model.request.CategoryModel;
 import ge.ecomerce.newecomerce.model.respone.CategoryWithSubcategories;
 import ge.ecomerce.newecomerce.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoryController {
 
-    private static final String CATEGORY_BASE_URL = "category";
+    private static final String CATEGORY_BASE_URL = "/category";
 
     private final CategoryService categoryService;
 
@@ -24,18 +26,18 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping(CATEGORY_BASE_URL + "/getById")
-    public ResponseEntity<Category> getById(@RequestParam Long categoryID) {
+    @GetMapping(CATEGORY_BASE_URL + "/{categoryID}")
+    public ResponseEntity<Category> getById(@PathVariable("categoryID") Long categoryID) {
         return new ResponseEntity<>(categoryService.getById(categoryID), HttpStatus.OK);
     }
 
     @GetMapping(CATEGORY_BASE_URL + "/getCategoryWithSubCategoryByCategoryID")
-    private ResponseEntity<CategoryWithSubcategories> getCategoryWithSubcategory(@RequestParam Long categoryID) {
+    public ResponseEntity<CategoryWithSubcategories> getCategoryWithSubcategory(@RequestParam Long categoryID) {
         return new ResponseEntity<>(categoryService.categoryWithSubcategoryByCategoryID(categoryID), HttpStatus.OK);
     }
 
     @GetMapping(CATEGORY_BASE_URL + "/getCategoryWithSubCategoryByCategories")
-    private ResponseEntity<List<CategoryWithSubcategories>> getCategoryWithSubcategories() {
+    public ResponseEntity<List<CategoryWithSubcategories>> getCategoryWithSubcategories() {
         return new ResponseEntity<>(categoryService.categoryWithSubcategoryByCategories(), HttpStatus.OK);
     }
 
@@ -46,13 +48,23 @@ public class CategoryController {
     }
 
     @PostMapping(CATEGORY_BASE_URL + "/save")
-    private ResponseEntity<Category> saveNewCategory(@RequestBody CategoryModel categoryModel) {
+    public ResponseEntity<Category> saveNewCategory(@RequestBody @Validated CategoryModel categoryModel) {
         return new ResponseEntity<>(categoryService.saveCategory(categoryModel), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(CATEGORY_BASE_URL + "/delete")
-    private ResponseEntity<String> delete(@RequestParam Long categoryID) {
+    @PostMapping(CATEGORY_BASE_URL + "/saveCategories")
+    public ResponseEntity<List<Category>> saveCategories(@RequestBody @Validated CategoriesModel categoriesModel) {
+        return new ResponseEntity<>(categoryService.saveCategories(categoriesModel), HttpStatus.OK);
+    }
+
+    @DeleteMapping(CATEGORY_BASE_URL + "/delete/{categoryID}")
+    public ResponseEntity<String> delete(@PathVariable("categoryID") Long categoryID) {
         return new ResponseEntity<>(categoryService.delete(categoryID), HttpStatus.OK);
+    }
+
+    @DeleteMapping(CATEGORY_BASE_URL + "/deleteAll")
+    public ResponseEntity<String> deleteAll() {
+        return new ResponseEntity<>(categoryService.deleteAll(), HttpStatus.OK);
     }
 
 }

@@ -1,6 +1,10 @@
 package ge.ecomerce.newecomerce.entity.category;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -30,7 +34,10 @@ public class Subcategory {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
-    @Column(nullable = false,unique = true)
+    @Column(unique = true)
+    @NotEmpty(message = "Name may not be empty")
+    @Size(max = 50,message = "Subcategory name size must be 0 to 50")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Subcategory name must contain only letters")
     private String name;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
