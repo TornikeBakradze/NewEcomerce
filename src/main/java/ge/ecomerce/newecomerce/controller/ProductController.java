@@ -5,6 +5,7 @@ import ge.ecomerce.newecomerce.model.request.ProductModel;
 import ge.ecomerce.newecomerce.model.request.ProductsModel;
 import ge.ecomerce.newecomerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,32 @@ public class ProductController {
 
     private static final String PRODUCT_BASE_URL = "/product";
     private final ProductService productService;
+
+    @GetMapping(PRODUCT_BASE_URL + "/allProduct")
+    private ResponseEntity<Page<Product>> allProduct(@RequestParam(required = false) Integer pageNumber,
+                                                     @RequestParam(required = false) Integer pageSize) {
+        return new ResponseEntity<>(productService.getALL(pageNumber, pageSize), HttpStatus.OK);
+    }
+
+    @GetMapping(PRODUCT_BASE_URL + "/{productID}")
+    private ResponseEntity<Product> getByID(@PathVariable("productID") Long productID) {
+        return new ResponseEntity<>(productService.getByID(productID), HttpStatus.OK);
+    }
+
+    @GetMapping(PRODUCT_BASE_URL + "byCategory/{categoryID}")
+    private ResponseEntity<Page<Product>> getByCategory(@RequestParam(required = false) Integer pageNumber,
+                                                        @RequestParam(required = false) Integer pageSize,
+                                                        @PathVariable("categoryID") Long categoryID) {
+        return new ResponseEntity<>(productService.getByCategory(categoryID, pageNumber, pageSize), HttpStatus.OK);
+    }
+
+    @GetMapping(PRODUCT_BASE_URL + "bySubCategory/{subCategoryID}")
+    private ResponseEntity<Page<Product>> getBySubCategory(@RequestParam(required = false) Integer pageNumber,
+                                                           @RequestParam(required = false) Integer pageSize,
+                                                           @PathVariable("subCategoryID") Long subCategoryID) {
+        return new ResponseEntity<>(productService.getBySubcategory(subCategoryID, pageNumber, pageSize), HttpStatus.OK);
+    }
+
 
     @PostMapping(PRODUCT_BASE_URL + "/addNewProduct")
     private ResponseEntity<Product> saveNew(@RequestBody @Validated ProductModel productModel) {

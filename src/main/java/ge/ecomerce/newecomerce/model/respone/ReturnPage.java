@@ -1,12 +1,13 @@
 package ge.ecomerce.newecomerce.model.respone;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 public class ReturnPage {
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_PAGE_SIZE = 25;
 
-    public static PageRequest buildPageRequest(Integer pageNumber, Integer pageSize) {
+    public static PageRequest buildPageRequest(Integer pageNumber, Integer pageSize,Sort sort) {
         int queryPageNumber;
         int queryPageSize;
 
@@ -24,6 +25,7 @@ public class ReturnPage {
         } else {
             queryPageSize = DEFAULT_PAGE_SIZE;
         }
-        return PageRequest.of(queryPageNumber, queryPageSize);
+
+        return PageRequest.of(queryPageNumber, queryPageSize,sort);
     }
 }

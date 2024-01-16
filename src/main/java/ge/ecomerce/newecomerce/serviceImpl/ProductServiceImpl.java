@@ -1,16 +1,22 @@
 package ge.ecomerce.newecomerce.serviceImpl;
 
 import ge.ecomerce.newecomerce.entity.Product;
+import ge.ecomerce.newecomerce.entity.category.Category;
 import ge.ecomerce.newecomerce.entity.category.Subcategory;
 import ge.ecomerce.newecomerce.exception.DataNotFoundException;
 import ge.ecomerce.newecomerce.model.request.ProductModel;
 import ge.ecomerce.newecomerce.model.request.ProductNameAndDescriptionModel;
 import ge.ecomerce.newecomerce.model.request.ProductsModel;
+import ge.ecomerce.newecomerce.model.respone.ReturnPage;
+import ge.ecomerce.newecomerce.repository.CategoryRepository;
 import ge.ecomerce.newecomerce.repository.ProductRepository;
 import ge.ecomerce.newecomerce.repository.SubcategoryRepository;
 import ge.ecomerce.newecomerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final SubcategoryRepository subcategoryRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public Product saveNewProduct(ProductModel productModel) {
@@ -70,14 +77,58 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getALL() {
-        return null;
+    public Page<Product> getALL(Integer pageNumber, Integer pageSize) {
+        try {
+            Sort.by("createdDate").descending();
+            PageRequest pageRequest = ReturnPage.buildPageRequest(pageNumber, pageSize, Sort.by("createdDate").descending());
+            Page<Product> products = productRepository.findAll(pageRequest);
+            if (products.isEmpty()) {
+                throw new DataNotFoundException("No product found");
+            } else
+                return products;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Product getByID(Long productID) {
-        return null;
+        return productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException(String.format("Product with %s id not found", productID)));
     }
+
+    @Override
+    public Page<Product> getByCategory(Long categoryID, Integer pageNumber, Integer pageSize) {
+        try {
+            Sort.by("createdDate").descending();
+            PageRequest pageRequest = ReturnPage.buildPageRequest(pageNumber, pageSize, Sort.by("createdDate").descending());
+            Page<Product> productByCategory = productRepository.getProductByCategory(categoryID, pageRequest);
+            if (productByCategory.isEmpty()) {
+                Category category = categoryRepository.findById(categoryID).orElseThrow(() -> new DataNotFoundException("Category not found"));
+                throw new DataNotFoundException(String.format("%s category product does not exist", category.getName()));
+            }
+            return productByCategory;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Page<Product> getBySubcategory(Long subCategoryID, Integer pageNumber, Integer pageSize) {
+        try {
+            Sort.by("createdDate").descending();
+            PageRequest pageRequest = ReturnPage.buildPageRequest(pageNumber, pageSize, Sort.by("createdDate").descending());
+            Page<Product> productByCategory = productRepository.getProductBySubCategory(subCategoryID, pageRequest);
+            if (productByCategory.isEmpty()) {
+                Subcategory subCategory = subcategoryRepository.findById(subCategoryID).orElseThrow(() -> new DataNotFoundException("SubCategory not found"));
+                throw new DataNotFoundException(String.format("%s subcategory product does not exist", subCategory.getName()));
+            }
+            return productByCategory;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
     @Override
     public String deleteByID(Long productID) {

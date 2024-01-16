@@ -4,6 +4,11 @@ import ge.ecomerce.newecomerce.entity.category.Subcategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Entity
 @Getter
@@ -25,6 +30,13 @@ public class Product {
     @Column(unique = true)
     private String name;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdDate;
+
+    @UpdateTimestamp
+    private Timestamp lastModifiedDate;
+
 
     @Size(max = 1000, message = "the description is to long")
     @Pattern(regexp = "^[a-zA-Z0-9 %.,!]+$", message = "Description can only contains letters numbers and % , . ! symbol")
@@ -32,5 +44,12 @@ public class Product {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Subcategory subcategory;
+
+    private BigDecimal price;
+
+    private int quantity;
+
+
+
 
 }
