@@ -11,10 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -34,12 +31,12 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<List<Map<String, String>>> handleBindErrors(MethodArgumentNotValidException exception) {
+    ResponseEntity<List<List<String>>> handleBindErrors(MethodArgumentNotValidException exception) {
 
-        List<Map<String, String>> errorList = exception.getFieldErrors().stream()
+        List<List<String>> errorList = exception.getFieldErrors().stream()
                 .map(fieldError -> {
-                    Map<String, String> errorMap = new HashMap<>();
-                    errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
+                    List<String> errorMap = new ArrayList<>();
+                    errorMap.add(fieldError.getDefaultMessage());
                     return errorMap;
                 }).collect(Collectors.toList());
 

@@ -46,6 +46,11 @@ public class ProductController {
         return new ResponseEntity<>(productService.getBySubcategory(subCategoryID, pageNumber, pageSize), HttpStatus.OK);
     }
 
+    @GetMapping(PRODUCT_BASE_URL + "/byName/{productName}")
+    private ResponseEntity<List<Product>> getByName(@PathVariable("productName") String productName) {
+        return new ResponseEntity<>(productService.getByName(productName), HttpStatus.OK);
+    }
+
 
     @PostMapping(PRODUCT_BASE_URL + "/addNewProduct")
     private ResponseEntity<Product> saveNew(@RequestBody @Validated ProductModel productModel) {

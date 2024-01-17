@@ -128,6 +128,18 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public List<Product> getByName(String name) {
+        try {
+            List<Product> byNameContaining = productRepository.getByNameContains(name.replace(" ", ""));
+            if (byNameContaining.isEmpty()) {
+                throw new DataNotFoundException("Product not found");
+            }
+            return byNameContaining;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     @Override

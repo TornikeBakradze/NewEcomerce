@@ -1,5 +1,6 @@
 package ge.ecomerce.newecomerce.model.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -9,7 +10,8 @@ import java.util.List;
 @Getter
 public class ProductsModel {
 
-    @NotEmpty(message = "productNameAndDescriptionModel must no be empty")
+    @Valid
+    @NotEmpty(message = "Product Name And DescriptionModel must no be empty")
     List<ProductNameAndDescriptionModel> productNameAndDescriptionModelList;
 
     @NotNull(message = "subCategoryID must not be null")

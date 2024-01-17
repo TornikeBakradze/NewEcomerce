@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -20,6 +22,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p from Product p where p.subcategory.id=:categoryID")
     Page<Product> getProductBySubCategory(@Param("categoryID") Long subCategoryID, Pageable pageable);
 
+    List<Product> getByNameContains(String name);
 
     @Query("DELETE FROM Product p where p.subcategory.id=:subcategoryID")
     @Modifying

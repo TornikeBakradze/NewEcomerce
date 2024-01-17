@@ -20,6 +20,8 @@ public interface ProductService {
 
     Page<Product> getBySubcategory(Long categoryID, Integer pageNumber, Integer pageSize);
 
+    List<Product> getByName(String name);
+
     String deleteByID(Long productID);
 
     String deleteAll(Long subCategoryID);
