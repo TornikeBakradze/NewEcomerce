@@ -35,10 +35,15 @@ public class ProductServiceImpl implements ProductService {
         Subcategory subcategory = subcategoryRepository.findById(productModel.getSubCategoryID())
                 .orElseThrow(() -> new DataNotFoundException("Subcategory not found"));
         try {
+            ProductNameAndDescriptionModel productDetails =
+                    productModel.getProductNameAndDescriptionModel();
             Product product = Product.builder()
-                    .name(productModel.getProductNameAndDescriptionModel().getName())
+                    .name(productDetails.getName())
+                    .price(productDetails.getPrice())
+                    .quantity(productDetails.getQuantity())
+                    .details(productDetails.getDetails())
                     .subcategory(subcategory)
-                    .description(productModel.getProductNameAndDescriptionModel().getDescription())
+                    .description(productDetails.getDescription())
                     .build();
             return productRepository.save(product);
         } catch (DataIntegrityViolationException e) {

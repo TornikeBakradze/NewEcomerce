@@ -26,17 +26,22 @@ public class Product {
     @Column(unique = true)
     private String name;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private Timestamp createdDate;
+    private BigDecimal price;
 
-    @UpdateTimestamp
-    private Timestamp lastModifiedDate;
+    private Integer quantity;
+
+    private String details;
 
     private String description;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Subcategory subcategory;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdDate;
+
+    @UpdateTimestamp
+    private Timestamp lastModifiedDate;
 
 }
