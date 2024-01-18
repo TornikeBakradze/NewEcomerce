@@ -65,6 +65,9 @@ public class ProductServiceImpl implements ProductService {
             for (ProductNameAndDescriptionModel productModel : productNameAndDescriptionModelList) {
                 Product product = Product.builder()
                         .name(productModel.getName())
+                        .price(productModel.getPrice())
+                        .quantity(productModel.getQuantity())
+                        .details(productModel.getDetails())
                         .description(productModel.getDescription())
                         .subcategory(subcategory)
                         .build();

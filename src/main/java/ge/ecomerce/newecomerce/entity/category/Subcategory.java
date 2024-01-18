@@ -40,7 +40,7 @@ public class Subcategory {
     @Column(unique = true)
     @NotEmpty(message = "Name may not be empty")
     @Size(max = 50, message = "Subcategory name size must be 2 to 50")
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Subcategory name must contain only letters")
+    @Pattern(regexp = "^[a-zA-Z0-9 -,]+$", message = "Product name must contain only letters and number")
     private String name;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
