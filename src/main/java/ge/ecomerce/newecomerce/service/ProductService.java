@@ -22,6 +22,10 @@ public interface ProductService {
 
     List<Product> getByName(String name);
 
+    Page<Product> getNotActiveProduct();
+
+    Product update(Long productID, ProductModel productModel);
+
     String deleteByID(Long productID);
 
     String deleteAll(Long subCategoryID);

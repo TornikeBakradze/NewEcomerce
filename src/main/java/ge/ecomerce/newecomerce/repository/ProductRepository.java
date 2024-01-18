@@ -11,18 +11,25 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+    @Query("SELECT  p from Product p where p.isActive=true")
+    Page<Product> getAll(Pageable pageable);
 
-    @Query("SELECT p from Product p where p.subcategory.category.id=:categoryID")
+    @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.id = :productID")
+    Optional<Product> getByProductId(@Param("productID") Long productID);
+
+    @Query("SELECT p FROM Product p WHERE p.isActive = true AND LOWER(p.name) LIKE LOWER(CONCAT('%', :productName, '%'))")
+    List<Product> getByName(@Param("productName") String productName);
+
+    @Query("SELECT p from Product p where p.subcategory.category.id=:categoryID and p.isActive=true")
     Page<Product> getProductByCategory(@Param("categoryID") Long categoryID, Pageable pageable);
 
-    @Query("SELECT p from Product p where p.subcategory.id=:categoryID")
+    @Query("SELECT p from Product p where p.subcategory.id=:categoryID and p.isActive = true")
     Page<Product> getProductBySubCategory(@Param("categoryID") Long subCategoryID, Pageable pageable);
-
-    List<Product> getByNameContains(String name);
 
     @Query("DELETE FROM Product p where p.subcategory.id=:subcategoryID")
     @Modifying

@@ -68,6 +68,7 @@ public class ProductServiceImpl implements ProductService {
                         .price(productModel.getPrice())
                         .quantity(productModel.getQuantity())
                         .details(productModel.getDetails())
+                        .isActive(true)
                         .description(productModel.getDescription())
                         .subcategory(subcategory)
                         .build();
@@ -89,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             Sort.by("createdDate").descending();
             PageRequest pageRequest = ReturnPage.buildPageRequest(pageNumber, pageSize, Sort.by("createdDate").descending());
-            Page<Product> products = productRepository.findAll(pageRequest);
+            Page<Product> products = productRepository.getAll(pageRequest);
             if (products.isEmpty()) {
                 throw new DataNotFoundException("No product found");
             } else
@@ -101,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getByID(Long productID) {
-        return productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException(String.format("Product with %s id not found", productID)));
+        return productRepository.getByProductId(productID).orElseThrow(() -> new DataNotFoundException(String.format("Product with %s id not found", productID)));
     }
 
     @Override
@@ -139,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getByName(String name) {
         try {
-            List<Product> byNameContaining = productRepository.getByNameContains(name.replace(" ", ""));
+            List<Product> byNameContaining = productRepository.getByName(name.replace(" ", ""));
             if (byNameContaining.isEmpty()) {
                 throw new DataNotFoundException("Product not found");
             }
@@ -149,10 +150,29 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public Product update(Long productID, ProductModel productModel) {
+        Product product = productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
+        try {
+            Subcategory subcategory =
+                    subcategoryRepository.findById(productModel.getSubCategoryID()).orElseThrow(() -> new DataNotFoundException("Subcategory not found"));
+            product.setName(productModel.getProductNameAndDescriptionModel().getName());
+            product.setPrice(productModel.getProductNameAndDescriptionModel().getPrice());
+            product.setQuantity(productModel.getProductNameAndDescriptionModel().getQuantity());
+            product.setDetails(productModel.getProductNameAndDescriptionModel().getDetails());
+            product.setDescription(productModel.getProductNameAndDescriptionModel().getDescription());
+            product.setSubcategory(subcategory);
+
+            return productRepository.save(product);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Override
     public String deleteByID(Long productID) {
-        Product product = productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException("Product not find"));
+        Product product = productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
         try {
             productRepository.delete(product);
             return String.format("%s deleted successfully", product.getName());

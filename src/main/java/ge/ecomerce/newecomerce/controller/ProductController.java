@@ -62,6 +62,12 @@ public class ProductController {
         return new ResponseEntity<>(productService.saveNewProducts(productsModel), HttpStatus.OK);
     }
 
+    @PutMapping(PRODUCT_BASE_URL + "/update/{productID}")
+    private ResponseEntity<Product> update(@PathVariable("productID") Long productID,
+                                           @RequestBody @Validated ProductModel productModel) {
+        return new ResponseEntity<>(productService.update(productID, productModel), HttpStatus.OK);
+    }
+
     @DeleteMapping(PRODUCT_BASE_URL + "/deleteByID/{productID}")
     private ResponseEntity<String> deleteByID(@RequestParam("productID") Long productID) {
         return new ResponseEntity<>(productService.deleteByID(productID), HttpStatus.OK);

@@ -34,6 +34,8 @@ public class Product {
 
     private String description;
 
+    private Boolean isActive;
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Subcategory subcategory;
 
