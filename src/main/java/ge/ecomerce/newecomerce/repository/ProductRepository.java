@@ -25,11 +25,23 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.isActive = true AND LOWER(p.name) LIKE LOWER(CONCAT('%', :productName, '%'))")
     List<Product> getByName(@Param("productName") String productName);
 
+    List<Product> findByNameContaining(String name);
+
     @Query("SELECT p from Product p where p.subcategory.category.id=:categoryID and p.isActive=true")
     Page<Product> getProductByCategory(@Param("categoryID") Long categoryID, Pageable pageable);
 
+    @Query("SELECT p from Product p where p.subcategory.category.id=:categoryID")
+    Page<Product> getProductByCategoryWithoutActive(@Param("categoryID") Long categoryID, Pageable pageable);
+
     @Query("SELECT p from Product p where p.subcategory.id=:categoryID and p.isActive = true")
     Page<Product> getProductBySubCategory(@Param("categoryID") Long subCategoryID, Pageable pageable);
+
+    @Query("SELECT p from Product p where p.subcategory.id=:categoryID")
+
+    Page<Product> getProductBySubCategoryWithoutActive(@Param("categoryID") Long subCategoryID, Pageable pageable);
+
+    @Query("select p from Product p where p.isActive=false")
+    Page<Product> getInactiveProduct(Pageable pageable);
 
     @Query("DELETE FROM Product p where p.subcategory.id=:subcategoryID")
     @Modifying

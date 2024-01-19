@@ -92,6 +92,21 @@ public class ProductServiceImpl implements ProductService {
             PageRequest pageRequest = ReturnPage.buildPageRequest(pageNumber, pageSize, Sort.by("createdDate").descending());
             Page<Product> products = productRepository.getAll(pageRequest);
             if (products.isEmpty()) {
+                throw new DataNotFoundException("No active product found");
+            } else
+                return products;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Page<Product> getALLWithoutActiveStatus(Integer pageNumber, Integer pageSize) {
+        try {
+            Sort.by("createdDate").descending();
+            PageRequest pageRequest = ReturnPage.buildPageRequest(pageNumber, pageSize, Sort.by("createdDate").descending());
+            Page<Product> products = productRepository.findAll(pageRequest);
+            if (products.isEmpty()) {
                 throw new DataNotFoundException("No product found");
             } else
                 return products;
@@ -102,7 +117,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getByID(Long productID) {
-        return productRepository.getByProductId(productID).orElseThrow(() -> new DataNotFoundException(String.format("Product with %s id not found", productID)));
+        return productRepository.getByProductId(productID).orElseThrow(() -> new DataNotFoundException(String.format("Active Product with %s id not found", productID)));
+    }
+
+    @Override
+    public Product getByIDWithoutActiveStatus(Long productID) {
+        return productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException(String.format("Product with %s id not found", productID)));
     }
 
     @Override
@@ -113,7 +133,25 @@ public class ProductServiceImpl implements ProductService {
             Page<Product> productByCategory = productRepository.getProductByCategory(categoryID, pageRequest);
             if (productByCategory.isEmpty()) {
                 Category category = categoryRepository.findById(categoryID).orElseThrow(() -> new DataNotFoundException("Category not found"));
-                throw new DataNotFoundException(String.format("%s category product does not exist", category.getName()));
+                throw new DataNotFoundException(String.format("%s category active product does not exist", category.getName()));
+            }
+            return productByCategory;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Page<Product> getByCategoryWithoutActive(Long categoryID, Integer pageNumber, Integer pageSize) {
+        try {
+            Sort.by("createdDate").descending();
+            PageRequest pageRequest = ReturnPage.buildPageRequest(pageNumber, pageSize, Sort.by("createdDate").descending());
+            Page<Product> productByCategory = productRepository.getProductByCategoryWithoutActive(categoryID, pageRequest);
+            if (productByCategory.isEmpty()) {
+                Category category = categoryRepository
+                        .findById(categoryID).orElseThrow(() -> new DataNotFoundException("Category not found"));
+                throw new DataNotFoundException
+                        (String.format("%s category product does not exist", category.getName()));
             }
             return productByCategory;
         } catch (Exception e) {
@@ -129,7 +167,7 @@ public class ProductServiceImpl implements ProductService {
             Page<Product> productByCategory = productRepository.getProductBySubCategory(subCategoryID, pageRequest);
             if (productByCategory.isEmpty()) {
                 Subcategory subCategory = subcategoryRepository.findById(subCategoryID).orElseThrow(() -> new DataNotFoundException("SubCategory not found"));
-                throw new DataNotFoundException(String.format("%s subcategory product does not exist", subCategory.getName()));
+                throw new DataNotFoundException(String.format("%s subcategory active product does not exist", subCategory.getName()));
             }
             return productByCategory;
         } catch (Exception e) {
@@ -138,9 +176,43 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<Product> getBySubcategoryWithoutActive(Long subCategoryID, Integer pageNumber, Integer pageSize) {
+        try {
+            Sort.by("createdDate").descending();
+            PageRequest pageRequest = ReturnPage
+                    .buildPageRequest(pageNumber, pageSize, Sort.by("createdDate").descending());
+            Page<Product> productByCategory = productRepository
+                    .getProductBySubCategoryWithoutActive(subCategoryID, pageRequest);
+            if (productByCategory.isEmpty()) {
+                Subcategory subCategory = subcategoryRepository
+                        .findById(subCategoryID).orElseThrow(() -> new DataNotFoundException("SubCategory not found"));
+                throw new DataNotFoundException
+                        (String.format("%s subcategory product does not exist", subCategory.getName()));
+            }
+            return productByCategory;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
     public List<Product> getByName(String name) {
         try {
             List<Product> byNameContaining = productRepository.getByName(name.replace(" ", ""));
+            if (byNameContaining.isEmpty()) {
+                throw new DataNotFoundException("Active product not found");
+            }
+            return byNameContaining;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Product> getByNameWithoutActive(String name) {
+        try {
+            List<Product> byNameContaining = productRepository.findByNameContaining(name.replace(" ", ""));
             if (byNameContaining.isEmpty()) {
                 throw new DataNotFoundException("Product not found");
             }
@@ -151,11 +223,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<Product> getInactiveProduct(Integer pageNumber, Integer pageSize) {
+        try {
+            PageRequest pageRequest = ReturnPage.buildPageRequest
+                    (pageNumber, pageSize, Sort.by("createdDate").descending());
+            Page<Product> inactiveProducts = productRepository.getInactiveProduct(pageRequest);
+            if (inactiveProducts.isEmpty()) {
+                throw new DataNotFoundException("Inactive product not found");
+            }
+            return inactiveProducts;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public Product update(Long productID, ProductModel productModel) {
-        Product product = productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
+        Product product = productRepository.findById(productID)
+                .orElseThrow(() -> new DataNotFoundException("Product not found"));
         try {
             Subcategory subcategory =
-                    subcategoryRepository.findById(productModel.getSubCategoryID()).orElseThrow(() -> new DataNotFoundException("Subcategory not found"));
+                    subcategoryRepository.findById(productModel.getSubCategoryID())
+                            .orElseThrow(() -> new DataNotFoundException("Subcategory not found"));
             product.setName(productModel.getProductNameAndDescriptionModel().getName());
             product.setPrice(productModel.getProductNameAndDescriptionModel().getPrice());
             product.setQuantity(productModel.getProductNameAndDescriptionModel().getQuantity());
@@ -172,7 +261,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public String deleteByID(Long productID) {
-        Product product = productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
+        Product product = productRepository
+                .findById(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
         try {
             productRepository.delete(product);
             return String.format("%s deleted successfully", product.getName());
@@ -183,10 +273,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public String deleteAll(Long subCategoryID) {
-        Subcategory subcategory = subcategoryRepository.findById(subCategoryID).orElseThrow(() -> new DataNotFoundException("Subcategory not find"));
+        Subcategory subcategory = subcategoryRepository.findById(subCategoryID)
+                .orElseThrow(() -> new DataNotFoundException("Subcategory not find"));
         try {
             productRepository.deleteAllByCategory(subCategoryID);
             return String.format("%s all product deleted", subcategory.getName());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String changeActiveStatus(Long productID) {
+        try {
+            Product product =
+                    productRepository.findById(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
+            product.setIsActive(!product.getIsActive());
+            productRepository.save(product);
+            if (product.getIsActive()) {
+                return String.format("%s is active", product.getName());
+            } else
+                return String.format("%s is inactive", product.getName());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -27,16 +27,34 @@ public class ProductController {
         return new ResponseEntity<>(productService.getALL(pageNumber, pageSize), HttpStatus.OK);
     }
 
+    @GetMapping(PRODUCT_BASE_URL + "/getWithoutActive/allProduct")
+    private ResponseEntity<Page<Product>> getALLWithoutActiveStatus(@RequestParam(required = false) Integer pageNumber,
+                                                                    @RequestParam(required = false) Integer pageSize) {
+        return new ResponseEntity<>(productService.getALLWithoutActiveStatus(pageNumber, pageSize), HttpStatus.OK);
+    }
+
     @GetMapping(PRODUCT_BASE_URL + "/{productID}")
     private ResponseEntity<Product> getByID(@PathVariable("productID") Long productID) {
         return new ResponseEntity<>(productService.getByID(productID), HttpStatus.OK);
     }
 
-    @GetMapping(PRODUCT_BASE_URL + "byCategory/{categoryID}")
+    @GetMapping(PRODUCT_BASE_URL + "/getWithoutActive/{productID}")
+    private ResponseEntity<Product> getByIDWithoutActiveStatus(@PathVariable("productID") Long productID) {
+        return new ResponseEntity<>(productService.getByIDWithoutActiveStatus(productID), HttpStatus.OK);
+    }
+
+    @GetMapping(PRODUCT_BASE_URL + "/byCategory/{categoryID}")
     private ResponseEntity<Page<Product>> getByCategory(@RequestParam(required = false) Integer pageNumber,
                                                         @RequestParam(required = false) Integer pageSize,
                                                         @PathVariable("categoryID") Long categoryID) {
         return new ResponseEntity<>(productService.getByCategory(categoryID, pageNumber, pageSize), HttpStatus.OK);
+    }
+
+    @GetMapping(PRODUCT_BASE_URL + "/getWithoutActive/byCategory/{categoryID}")
+    private ResponseEntity<Page<Product>> getByCategoryWithoutActive(@RequestParam(required = false) Integer pageNumber,
+                                                                     @RequestParam(required = false) Integer pageSize,
+                                                                     @PathVariable("categoryID") Long categoryID) {
+        return new ResponseEntity<>(productService.getByCategoryWithoutActive(categoryID, pageNumber, pageSize), HttpStatus.OK);
     }
 
     @GetMapping(PRODUCT_BASE_URL + "bySubCategory/{subCategoryID}")
@@ -46,9 +64,27 @@ public class ProductController {
         return new ResponseEntity<>(productService.getBySubcategory(subCategoryID, pageNumber, pageSize), HttpStatus.OK);
     }
 
+    @GetMapping(PRODUCT_BASE_URL + "/getWithoutActive/bySubCategory/{subCategoryID}")
+    private ResponseEntity<Page<Product>> getBySubcategoryWithoutActive(@RequestParam(required = false) Integer pageNumber,
+                                                                        @RequestParam(required = false) Integer pageSize,
+                                                                        @PathVariable("subCategoryID") Long subCategoryID) {
+        return new ResponseEntity<>(productService.getBySubcategoryWithoutActive(subCategoryID, pageNumber, pageSize), HttpStatus.OK);
+    }
+
     @GetMapping(PRODUCT_BASE_URL + "/byName/{productName}")
     private ResponseEntity<List<Product>> getByName(@PathVariable("productName") String productName) {
         return new ResponseEntity<>(productService.getByName(productName), HttpStatus.OK);
+    }
+
+    @GetMapping(PRODUCT_BASE_URL + "/getWithoutActive/byName/{productName}")
+    private ResponseEntity<List<Product>> getByNameWithoutActive(@PathVariable("productName") String productName) {
+        return new ResponseEntity<>(productService.getByNameWithoutActive(productName), HttpStatus.OK);
+    }
+
+    @GetMapping(PRODUCT_BASE_URL + "/inactiveProduct")
+    private ResponseEntity<Page<Product>> getInactiveProduct(@RequestParam(required = false) Integer pageNumber,
+                                                             @RequestParam(required = false) Integer pageSize) {
+        return new ResponseEntity<>(productService.getInactiveProduct(pageNumber, pageSize), HttpStatus.OK);
     }
 
 
@@ -76,6 +112,12 @@ public class ProductController {
     @DeleteMapping(PRODUCT_BASE_URL + "/deleteAllBySubcategory/{subcategoryID}")
     private ResponseEntity<String> deleteAllBySubcategory(@RequestParam("subcategoryID") Long subcategoryID) {
         return new ResponseEntity<>(productService.deleteAll(subcategoryID), HttpStatus.OK);
+    }
+
+
+    @PutMapping(PRODUCT_BASE_URL + "/changeActiveStatus/{productID}")
+    private ResponseEntity<String> changeActiveStatus(@PathVariable("productID") Long productID) {
+        return new ResponseEntity<>(productService.changeActiveStatus(productID), HttpStatus.OK);
     }
 
 }

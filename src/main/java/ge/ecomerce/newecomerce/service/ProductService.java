@@ -14,15 +14,25 @@ public interface ProductService {
 
     Page<Product> getALL(Integer pageNumber, Integer pageSize);
 
+    Page<Product> getALLWithoutActiveStatus(Integer pageNumber, Integer pageSize);
+
     Product getByID(Long productID);
+
+    Product getByIDWithoutActiveStatus(Long productID);
 
     Page<Product> getByCategory(Long categoryID, Integer pageNumber, Integer pageSize);
 
-    Page<Product> getBySubcategory(Long categoryID, Integer pageNumber, Integer pageSize);
+    Page<Product> getByCategoryWithoutActive(Long categoryID, Integer pageNumber, Integer pageSize);
+
+    Page<Product> getBySubcategory(Long subCategoryID, Integer pageNumber, Integer pageSize);
+
+    Page<Product> getBySubcategoryWithoutActive(Long subCategoryID, Integer pageNumber, Integer pageSize);
 
     List<Product> getByName(String name);
 
-    Page<Product> getNotActiveProduct();
+    List<Product> getByNameWithoutActive(String name);
+
+    Page<Product> getInactiveProduct(Integer pageNumber, Integer pageSize);
 
     Product update(Long productID, ProductModel productModel);
 
@@ -30,6 +40,6 @@ public interface ProductService {
 
     String deleteAll(Long subCategoryID);
 
+    String changeActiveStatus(Long productID);
 
-    //todo add search by product name
 }
