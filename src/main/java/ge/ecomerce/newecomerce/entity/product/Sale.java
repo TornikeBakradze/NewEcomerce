@@ -1,5 +1,6 @@
 package ge.ecomerce.newecomerce.entity.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -33,6 +35,8 @@ public class Sale {
 
     private BigDecimal saleInNumber;
 
-    private BigDecimal salePrice;
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Product> products;
 
 }

@@ -41,6 +41,10 @@ public class Product {
     private Boolean isActive;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Sale sale;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Subcategory subcategory;
 
     @CreationTimestamp
