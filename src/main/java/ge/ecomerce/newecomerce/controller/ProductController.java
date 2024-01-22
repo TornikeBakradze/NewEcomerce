@@ -1,6 +1,6 @@
 package ge.ecomerce.newecomerce.controller;
 
-import ge.ecomerce.newecomerce.entity.Product;
+import ge.ecomerce.newecomerce.entity.product.Product;
 import ge.ecomerce.newecomerce.model.request.ProductModel;
 import ge.ecomerce.newecomerce.model.request.ProductsModel;
 import ge.ecomerce.newecomerce.service.ProductService;

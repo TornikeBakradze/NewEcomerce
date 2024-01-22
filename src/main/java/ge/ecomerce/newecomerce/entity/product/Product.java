@@ -1,5 +1,6 @@
-package ge.ecomerce.newecomerce.entity;
+package ge.ecomerce.newecomerce.entity.product;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import ge.ecomerce.newecomerce.entity.category.Subcategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -27,6 +28,9 @@ public class Product {
     private String name;
 
     private BigDecimal price;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private BigDecimal salePrice;
 
     private Integer quantity;
 

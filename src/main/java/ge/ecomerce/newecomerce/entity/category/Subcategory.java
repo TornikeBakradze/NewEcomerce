@@ -1,7 +1,7 @@
 package ge.ecomerce.newecomerce.entity.category;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ge.ecomerce.newecomerce.entity.Product;
+import ge.ecomerce.newecomerce.entity.product.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;

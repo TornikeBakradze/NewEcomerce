@@ -1,6 +1,6 @@
 package ge.ecomerce.newecomerce.repository;
 
-import ge.ecomerce.newecomerce.entity.Product;
+import ge.ecomerce.newecomerce.entity.product.Product;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,6 +1,6 @@
 package ge.ecomerce.newecomerce.serviceImpl;
 
-import ge.ecomerce.newecomerce.entity.Product;
+import ge.ecomerce.newecomerce.entity.product.Product;
 import ge.ecomerce.newecomerce.entity.category.Category;
 import ge.ecomerce.newecomerce.entity.category.Subcategory;
 import ge.ecomerce.newecomerce.exception.DataNotFoundException;
