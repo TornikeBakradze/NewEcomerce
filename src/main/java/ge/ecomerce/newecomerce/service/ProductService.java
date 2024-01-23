@@ -42,4 +42,8 @@ public interface ProductService {
 
     String changeActiveStatus(Long productID);
 
+    Product addSale(Long productID, Long saleID);
+
+    String deleteSale(Long productID);
+
 }

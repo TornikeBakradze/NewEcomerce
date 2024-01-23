@@ -37,7 +37,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> getProductBySubCategory(@Param("categoryID") Long subCategoryID, Pageable pageable);
 
     @Query("SELECT p from Product p where p.subcategory.id=:categoryID")
-
     Page<Product> getProductBySubCategoryWithoutActive(@Param("categoryID") Long subCategoryID, Pageable pageable);
 
     @Query("select p from Product p where p.isActive=false")
@@ -47,4 +46,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Modifying
     @Transactional
     void deleteAllByCategory(@Param("subcategoryID") Long subcategoryID);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Product p SET p.sale.id = null WHERE p.id = :productId")
+    void updateSaleIdToNull(Long productId);
 }

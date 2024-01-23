@@ -120,4 +120,15 @@ public class ProductController {
         return new ResponseEntity<>(productService.changeActiveStatus(productID), HttpStatus.OK);
     }
 
+    @PostMapping(PRODUCT_BASE_URL + "/addSale/{productID}/{saleID}")
+    private ResponseEntity<Product> addSale(@PathVariable("productID") Long productID,
+                                            @PathVariable("saleID") Long saleID) {
+        return new ResponseEntity<>(productService.addSale(productID, saleID), HttpStatus.OK);
+    }
+
+    @DeleteMapping(PRODUCT_BASE_URL + "/deleteSale/{productID}")
+    private ResponseEntity<String> deleteSale(@PathVariable("productID") Long productID) {
+        return new ResponseEntity<>(productService.deleteSale(productID), HttpStatus.OK);
+    }
+
 }

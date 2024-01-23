@@ -10,5 +10,7 @@ public interface SaleService {
 
     List<Sale> getALLSale();
 
-    Sale getByID();
+    Sale getByID(Long saleId);
+
+    Sale updateSale(Long saleId, SaleModel saleModel);
 }

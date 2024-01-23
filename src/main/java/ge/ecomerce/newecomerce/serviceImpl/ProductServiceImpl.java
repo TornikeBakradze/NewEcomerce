@@ -1,8 +1,9 @@
 package ge.ecomerce.newecomerce.serviceImpl;
 
-import ge.ecomerce.newecomerce.entity.product.Product;
 import ge.ecomerce.newecomerce.entity.category.Category;
 import ge.ecomerce.newecomerce.entity.category.Subcategory;
+import ge.ecomerce.newecomerce.entity.product.Product;
+import ge.ecomerce.newecomerce.entity.product.Sale;
 import ge.ecomerce.newecomerce.exception.DataNotFoundException;
 import ge.ecomerce.newecomerce.model.request.ProductModel;
 import ge.ecomerce.newecomerce.model.request.ProductNameAndDescriptionModel;
@@ -10,6 +11,7 @@ import ge.ecomerce.newecomerce.model.request.ProductsModel;
 import ge.ecomerce.newecomerce.model.respone.ReturnPage;
 import ge.ecomerce.newecomerce.repository.CategoryRepository;
 import ge.ecomerce.newecomerce.repository.ProductRepository;
+import ge.ecomerce.newecomerce.repository.SaleRepository;
 import ge.ecomerce.newecomerce.repository.SubcategoryRepository;
 import ge.ecomerce.newecomerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final SubcategoryRepository subcategoryRepository;
     private final CategoryRepository categoryRepository;
+    private final SaleRepository saleRepository;
 
     @Override
     public Product saveNewProduct(ProductModel productModel) {
@@ -297,6 +300,25 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Product addSale(Long productID, Long saleID) {
+        try {
+            Product product = productRepository.getByProductId(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
+            Sale sale = saleRepository.findById(saleID).orElseThrow(() -> new DataNotFoundException("Sale not found"));
+            product.setSale(sale);
+            return productRepository.save(product);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String deleteSale(Long productID) {
+        Product product = productRepository.getByProductId(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
+        productRepository.updateSaleIdToNull(product.getId());
+        return "clear Sale";
     }
 
 }

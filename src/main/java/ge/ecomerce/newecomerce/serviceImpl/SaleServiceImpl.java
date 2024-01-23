@@ -10,9 +10,7 @@ import ge.ecomerce.newecomerce.service.SaleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,27 +22,18 @@ public class SaleServiceImpl implements SaleService {
     @Override
     public Sale addNewSale(SaleModel saleModel) {
         try {
-            Set<Product> products = new HashSet<>();
-            for (Long productId : saleModel.getProducts()) {
-                Product product = productRepository
-                        .findById(productId).orElseThrow(() -> new DataNotFoundException("Product not found"));
-                products.add(product);
-            }
             Sale sale = Sale.builder()
                     .saleInNumber(saleModel.getSaleInNumber())
                     .saleInPercent(saleModel.getSaleInPercent())
                     .startDate(saleModel.getStartDate())
                     .endDate(saleModel.getEndDate())
-                    .products(products)
                     .build();
             Sale savedSale = saleRepository.save(sale);
-            if (saleModel.getSaleInNumber() != null) {
-                for (Long productID : saleModel.getProducts()) {
+            if (!saleModel.getProducts().isEmpty()) {
+                for (Long productId : saleModel.getProducts()) {
                     Product product = productRepository
-                            .findById(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
-                    product.setSalePrice(product.getPrice().subtract(saleModel.getSaleInNumber()));
-                    product.setSale(savedSale);
-
+                            .findById(productId).orElseThrow(() -> new DataNotFoundException("Product not found"));
+                    product.setSale(sale);
                     productRepository.save(product);
                 }
             }
@@ -60,7 +49,29 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public Sale getByID() {
-        return null;
+    public Sale getByID(Long saleId) {
+        return saleRepository.findById(saleId).orElseThrow(() -> new DataNotFoundException("Sale not found"));
+    }
+
+    @Override
+    public Sale updateSale(Long saleId, SaleModel saleModel) {
+        try {
+            Sale updateSale = saleRepository.findById(saleId).orElseThrow(() -> new DataNotFoundException("Sale not found"));
+            updateSale.setSaleInNumber(saleModel.getSaleInNumber());
+            updateSale.setSaleInPercent(saleModel.getSaleInPercent());
+            updateSale.setStartDate(saleModel.getStartDate());
+            updateSale.setEndDate(saleModel.getEndDate());
+            Sale savedSale = saleRepository.saveAndFlush(updateSale);
+            if (!saleModel.getProducts().isEmpty()) {
+                for (Long productId : saleModel.getProducts()) {
+                    Product product = productRepository
+                            .findById(productId).orElseThrow(() -> new DataNotFoundException("Product not found"));
+                    product.setSale(savedSale);
+                }
+            }
+            return savedSale;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
