@@ -35,7 +35,7 @@ public class Sale {
 
     private BigDecimal saleInNumber;
 
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private Set<Product> products;
 

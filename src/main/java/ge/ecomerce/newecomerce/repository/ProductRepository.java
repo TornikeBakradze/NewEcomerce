@@ -51,4 +51,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Transactional
     @Query("UPDATE Product p SET p.sale.id = null WHERE p.id = :productId")
     void updateSaleIdToNull(Long productId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Product p SET p.sale.id = null WHERE p.sale.id = :saleId")
+    void updateSaleToNullBySaleID(Long saleId);
 }

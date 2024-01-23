@@ -7,10 +7,16 @@ import ge.ecomerce.newecomerce.model.request.SaleModel;
 import ge.ecomerce.newecomerce.repository.ProductRepository;
 import ge.ecomerce.newecomerce.repository.SaleRepository;
 import ge.ecomerce.newecomerce.service.SaleService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -73,5 +79,42 @@ public class SaleServiceImpl implements SaleService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String deleteSale(Long saleID) {
+        try {
+            Sale sale = saleRepository.findById(saleID).orElseThrow(() -> new DataNotFoundException("Sale not found"));
+            productRepository.updateSaleToNullBySaleID(saleID);
+            saleRepository.delete(sale);
+            return String.format("Sale with id %s is deleted", saleID);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @PostConstruct
+    public void initialize() {
+        // Get the current time
+        LocalDateTime now = LocalDateTime.now();
+
+        // Set the desired execution time (e.g., tomorrow at 8:00 AM)
+        LocalDateTime executionTime = LocalDateTime.now().plusMinutes(1);
+
+        // Calculate the initial delay in seconds until the desired execution time
+        long initialDelay = Duration.between(now, executionTime).getSeconds();
+
+        // Schedule the task for one-time execution
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+        executorService.schedule(this::runOneTimeTask, initialDelay, TimeUnit.SECONDS);
+    }
+
+    private void runOneTimeTask() {
+        // Your one-time task logic here
+        System.out.println("execute");
+
+        // Optionally, you can shutdown the executor service after execution
+        // executorService.shutdown();
     }
 }

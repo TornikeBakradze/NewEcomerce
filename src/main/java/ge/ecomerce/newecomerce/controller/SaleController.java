@@ -38,4 +38,9 @@ public class SaleController {
                                         @RequestBody @Validated SaleModel saleModel) {
         return new ResponseEntity<>(saleService.updateSale(saleId, saleModel), HttpStatus.OK);
     }
+
+    @DeleteMapping(SALE_BASE_URL + "/deleteSale/{saleId}")
+    private ResponseEntity<String> delete(@RequestParam("saleId") Long saleId) {
+        return new ResponseEntity<>(saleService.deleteSale(saleId), HttpStatus.OK);
+    }
 }
