@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,4 +57,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Transactional
     @Query("UPDATE Product p SET p.sale.id = null WHERE p.sale.id = :saleId")
     void updateSaleToNullBySaleID(Long saleId);
+
+    @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.sale.id = :saleID")
+    List<Product> getByProductBySaleId(@Param("saleID") Long saleID);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Product p SET p.salePrice = :newPrice WHERE p.id = :productID")
+    int updateSalePrice(@Param("productID") Long productID, @Param("newPrice") BigDecimal newPrice);
 }

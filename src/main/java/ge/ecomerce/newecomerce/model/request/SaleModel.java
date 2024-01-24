@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Getter
 public class SaleModel {
-
+    @Future(message = "sale start date and time must be in the future min 1 minute")
     private LocalDateTime startDate;
 
     @Future(message = "sale end  date and time must be in the future")

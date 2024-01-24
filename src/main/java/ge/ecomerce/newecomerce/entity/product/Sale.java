@@ -1,6 +1,7 @@
 package ge.ecomerce.newecomerce.entity.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,8 +32,10 @@ public class Sale {
 
     private LocalDateTime endDate;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer saleInPercent;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private BigDecimal saleInNumber;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.PERSIST)
