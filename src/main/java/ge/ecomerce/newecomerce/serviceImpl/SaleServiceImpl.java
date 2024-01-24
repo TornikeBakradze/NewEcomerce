@@ -130,6 +130,7 @@ public class SaleServiceImpl implements SaleService {
     @Transactional
     public void endSale() {
         try {
+            ss();
             LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
             LocalDateTime endTime = LocalDateTime.now().plusMinutes(1);
 
@@ -178,5 +179,15 @@ public class SaleServiceImpl implements SaleService {
         return result.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
+
+    private void ss(){
+        LocalDateTime startTime = LocalDateTime.now().minusMinutes(10);
+        LocalDateTime endTime = LocalDateTime.now().plusMinutes(10);
+
+        List<Sale> allEndingSale = saleRepository.findAllEndingSale(startTime, endTime);
+        for (Sale sale : allEndingSale) {
+            System.out.println(sale.getCreatedDate());
+        }
+    }
 
 }

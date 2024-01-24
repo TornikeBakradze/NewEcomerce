@@ -19,7 +19,11 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findAllStartSale(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime);
 
     @Query("SELECT s FROM Sale s WHERE s.endDate BETWEEN :startDateTime AND :endDateTime")
-    List<Sale> findAllEndingSale(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime);
+    List<Sale> findAllEndingSale(
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime
+    );
+
 
     @Modifying
     @Query("UPDATE Sale s SET s.saleInPercent = :newPrice WHERE s.id = :saleID")
