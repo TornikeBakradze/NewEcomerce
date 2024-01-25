@@ -6,15 +6,21 @@ import ge.ecomerce.newecomerce.exception.DataNotFoundException;
 import ge.ecomerce.newecomerce.model.request.SaleModel;
 import ge.ecomerce.newecomerce.repository.ProductRepository;
 import ge.ecomerce.newecomerce.repository.SaleRepository;
+import ge.ecomerce.newecomerce.runnable.StartSale;
 import ge.ecomerce.newecomerce.service.SaleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +28,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class SaleServiceImpl implements SaleService {
+    private final TaskScheduler taskScheduler;
 
     private final SaleRepository saleRepository;
     private final ProductRepository productRepository;
@@ -98,38 +105,44 @@ public class SaleServiceImpl implements SaleService {
         }
     }
 
-
-    @Scheduled(fixedRate = 60 * 1000)
-    @Transactional
-    public void startSale() {
-        try {
-            if (oldSaleCounter < saleCounter) {
-                LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
-                LocalDateTime endTime = LocalDateTime.now().plusMinutes(1);
-
-                List<Sale> activeSales = saleRepository.findAllStartSale(startTime, endTime);
-
-                if (!activeSales.isEmpty()) {
-                    for (Sale sale : activeSales) {
-                        List<Product> products = productRepository.getByProductBySaleId(sale.getId());
-
-                        if (!products.isEmpty()) {
-                            for (Product product : products) {
-                                updateProductPrice(product, sale, "Start");
-                            }
-                            oldSaleCounter++;
-                        }
-                    }
-                }
-            }
-            if (Objects.equals(oldSaleCounter, saleCounter) && oldSaleCounter != 0) {
-                oldSaleCounter = 0;
-                saleCounter = 0;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error in scheduled task", e);
-        }
-    }
+//    @Scheduled(fixedRate = 60 * 1000)
+//    @Transactional
+//    public void startSale() {
+//        try {
+//            if (oldSaleCounter < saleCounter) {
+//                LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
+//                LocalDateTime endTime = LocalDateTime.now().plusMinutes(1);
+//
+//                List<Sale> activeSales = saleRepository.findAllStartSale(startTime, endTime);
+//
+//                if (!activeSales.isEmpty()) {
+//                    for (Sale sale : activeSales) {
+//                        List<Product> products = productRepository.getByProductBySaleId(sale.getId());
+//
+//                        if (!products.isEmpty()) {
+//                            List<Product> starSaleProducts = new ArrayList<>();
+//                            for (Product product : products) {
+//                                Product startSaleProduct = updateProductPrice(product, sale, "Start");
+//                                starSaleProducts.add(startSaleProduct);
+//                            }
+//                            Instant instant = Instant.now().plusSeconds(Duration.between(LocalDateTime.now(), sale.getStartDate()).getSeconds() * 1000);
+//                            taskScheduler.schedule(
+//                                    new StartSale(productRepository, starSaleProducts),
+//                                    instant
+//                            );
+//                            oldSaleCounter++;
+//                        }
+//                    }
+//                }
+//            }
+//            if (Objects.equals(oldSaleCounter, saleCounter) && oldSaleCounter != 0) {
+//                oldSaleCounter = 0;
+//                saleCounter = 0;
+//            }
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error in scheduled task", e);
+//        }
+//    }
 
     @Scheduled(fixedRate = 60 * 1000)
     @Transactional
@@ -155,9 +168,7 @@ public class SaleServiceImpl implements SaleService {
         }
     }
 
-
-
-    public void updateProductPrice(Product product, Sale sale, String action) {
+    public Product updateProductPrice(Product product, Sale sale, String action) {
         if (action.equals("Start")) {
             BigDecimal originalPrice = product.getPrice();
             if (sale.getSaleInNumber() != null) {
@@ -167,15 +178,15 @@ public class SaleServiceImpl implements SaleService {
                 BigDecimal salePrice = calculatePercentageOfAmount(originalPrice, sale.getSaleInPercent());
                 product.setSalePrice(salePrice);
             }
-
-            productRepository.save(product);
+            return product;
         } else {
-            product.setSalePrice(null);
-            deleteSale(sale.getId());
+            productRepository.updateSaleToNullBySaleID(sale.getId());
+            productRepository.updateSalePrice(product.getId(), null);
+            return null;
         }
     }
 
-    private BigDecimal calculatePercentageOfAmount(BigDecimal amount, int percentage) {
+    public static BigDecimal calculatePercentageOfAmount(BigDecimal amount, int percentage) {
         if (amount.compareTo(BigDecimal.ZERO) == 0) {
             throw new IllegalArgumentException("Amount cannot be zero.");
         }

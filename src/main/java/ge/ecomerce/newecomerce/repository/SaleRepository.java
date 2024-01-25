@@ -15,7 +15,7 @@ import java.util.Set;
 @Repository
 public interface SaleRepository extends JpaRepository<Sale, Long> {
 
-    @Query("SELECT s FROM Sale s WHERE s.startDate BETWEEN :startDateTime AND :endDateTime")
+    @Query("SELECT s FROM Sale s WHERE s.startDate BETWEEN :startDateTime AND :endDateTime order by s.startDate asc")
     List<Sale> findAllStartSale(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime);
 
     @Query("SELECT s FROM Sale s WHERE s.endDate BETWEEN :startDateTime AND :endDateTime")
