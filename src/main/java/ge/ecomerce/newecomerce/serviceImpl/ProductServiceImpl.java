@@ -45,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
                     .price(productDetails.getPrice())
                     .quantity(productDetails.getQuantity())
                     .details(productDetails.getDetails())
+                    .isActive(true)
                     .subcategory(subcategory)
                     .description(productDetails.getDescription())
                     .build();

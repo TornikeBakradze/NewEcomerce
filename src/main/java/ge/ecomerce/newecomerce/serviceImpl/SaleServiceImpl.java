@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +25,8 @@ public class SaleServiceImpl implements SaleService {
 
     private final SaleRepository saleRepository;
     private final ProductRepository productRepository;
-    private Long oldSaleCounter = 0L;
-    private Long saleCounter = 0L;
+    private Byte oldSaleCounter = 0;
+    private Byte saleCounter = 0;
 
 
     @Override
@@ -98,7 +99,7 @@ public class SaleServiceImpl implements SaleService {
     }
 
 
-    @Scheduled(fixedRate = 20 * 1000)
+    @Scheduled(fixedRate = 60 * 1000)
     @Transactional
     public void startSale() {
         try {
@@ -121,20 +122,24 @@ public class SaleServiceImpl implements SaleService {
                     }
                 }
             }
+            if (Objects.equals(oldSaleCounter, saleCounter) && oldSaleCounter != 0) {
+                oldSaleCounter = 0;
+                saleCounter = 0;
+            }
         } catch (Exception e) {
             throw new RuntimeException("Error in scheduled task", e);
         }
     }
 
-    @Scheduled(fixedRate = 20 * 1000)
+    @Scheduled(fixedRate = 60 * 1000)
     @Transactional
     public void endSale() {
         try {
-            ss();
             LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
             LocalDateTime endTime = LocalDateTime.now().plusMinutes(1);
 
             List<Sale> allEndingSale = saleRepository.findAllEndingSale(startTime, endTime);
+
             if (!allEndingSale.isEmpty()) {
                 for (Sale sale : allEndingSale) {
                     List<Product> products = productRepository.getByProductBySaleId(sale.getId());
@@ -150,21 +155,23 @@ public class SaleServiceImpl implements SaleService {
         }
     }
 
-    private void updateProductPrice(Product product, Sale sale, String action) {
+
+
+    public void updateProductPrice(Product product, Sale sale, String action) {
         if (action.equals("Start")) {
             BigDecimal originalPrice = product.getPrice();
             if (sale.getSaleInNumber() != null) {
                 BigDecimal updatedSalePrice = originalPrice.subtract(sale.getSaleInNumber());
-                product.setPrice(updatedSalePrice);
+                product.setSalePrice(updatedSalePrice);
             } else if (sale.getSaleInPercent() != null) {
                 BigDecimal salePrice = calculatePercentageOfAmount(originalPrice, sale.getSaleInPercent());
-                product.setPrice(salePrice);
+                product.setSalePrice(salePrice);
             }
 
             productRepository.save(product);
         } else {
-            deleteSale(sale.getId());
             product.setSalePrice(null);
+            deleteSale(sale.getId());
         }
     }
 
@@ -178,16 +185,4 @@ public class SaleServiceImpl implements SaleService {
 
         return result.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
-
-
-    private void ss(){
-        LocalDateTime startTime = LocalDateTime.now().minusMinutes(10);
-        LocalDateTime endTime = LocalDateTime.now().plusMinutes(10);
-
-        List<Sale> allEndingSale = saleRepository.findAllEndingSale(startTime, endTime);
-        for (Sale sale : allEndingSale) {
-            System.out.println(sale.getCreatedDate());
-        }
-    }
-
 }
