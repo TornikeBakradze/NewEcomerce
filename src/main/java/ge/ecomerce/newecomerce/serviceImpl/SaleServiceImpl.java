@@ -32,13 +32,12 @@ public class SaleServiceImpl implements SaleService {
 
     private final SaleRepository saleRepository;
     private final ProductRepository productRepository;
-    private Byte oldSaleCounter = 0;
-    private Byte saleCounter = 0;
 
 
     @Override
     public Sale addNewSale(SaleModel saleModel) {
         try {
+            List<Long> salesId = new ArrayList<>();
             Sale sale = Sale.builder()
                     .saleInNumber(saleModel.getSaleInNumber())
                     .saleInPercent(saleModel.getSaleInPercent())
@@ -54,7 +53,12 @@ public class SaleServiceImpl implements SaleService {
                     productRepository.save(product);
                 }
             }
-            saleCounter++;
+            salesId.add(savedSale.getId());
+            Instant instant = Instant.now().plusSeconds(Duration.between(LocalDateTime.now(), savedSale.getStartDate()).getSeconds());
+            taskScheduler.schedule(
+                    new StartSale(productRepository, saleRepository, salesId),
+                    instant
+            );
             return savedSale;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -85,6 +89,7 @@ public class SaleServiceImpl implements SaleService {
                     Product product = productRepository
                             .findById(productId).orElseThrow(() -> new DataNotFoundException("Product not found"));
                     product.setSale(savedSale);
+                    productRepository.save(product);
                 }
             }
             return savedSale;
@@ -105,95 +110,30 @@ public class SaleServiceImpl implements SaleService {
         }
     }
 
+
 //    @Scheduled(fixedRate = 60 * 1000)
 //    @Transactional
-//    public void startSale() {
+//    public void endSale() {
 //        try {
-//            if (oldSaleCounter < saleCounter) {
-//                LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
-//                LocalDateTime endTime = LocalDateTime.now().plusMinutes(1);
+//            LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
+//            LocalDateTime endTime = LocalDateTime.now().plusMinutes(1);
 //
-//                List<Sale> activeSales = saleRepository.findAllStartSale(startTime, endTime);
+//            List<Sale> allEndingSale = saleRepository.findAllEndingSale(startTime, endTime);
 //
-//                if (!activeSales.isEmpty()) {
-//                    for (Sale sale : activeSales) {
-//                        List<Product> products = productRepository.getByProductBySaleId(sale.getId());
-//
-//                        if (!products.isEmpty()) {
-//                            List<Product> starSaleProducts = new ArrayList<>();
-//                            for (Product product : products) {
-//                                Product startSaleProduct = updateProductPrice(product, sale, "Start");
-//                                starSaleProducts.add(startSaleProduct);
-//                            }
-//                            Instant instant = Instant.now().plusSeconds(Duration.between(LocalDateTime.now(), sale.getStartDate()).getSeconds() * 1000);
-//                            taskScheduler.schedule(
-//                                    new StartSale(productRepository, starSaleProducts),
-//                                    instant
-//                            );
-//                            oldSaleCounter++;
+//            if (!allEndingSale.isEmpty()) {
+//                for (Sale sale : allEndingSale) {
+//                    List<Product> products = productRepository.getByProductBySaleId(sale.getId());
+//                    if (!products.isEmpty()) {
+//                        for (Product product : products) {
+//                            updateProductPrice(product, sale, "End");
 //                        }
 //                    }
 //                }
 //            }
-//            if (Objects.equals(oldSaleCounter, saleCounter) && oldSaleCounter != 0) {
-//                oldSaleCounter = 0;
-//                saleCounter = 0;
-//            }
 //        } catch (Exception e) {
-//            throw new RuntimeException("Error in scheduled task", e);
+//            throw new RuntimeException(e);
 //        }
 //    }
 
-    @Scheduled(fixedRate = 60 * 1000)
-    @Transactional
-    public void endSale() {
-        try {
-            LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
-            LocalDateTime endTime = LocalDateTime.now().plusMinutes(1);
 
-            List<Sale> allEndingSale = saleRepository.findAllEndingSale(startTime, endTime);
-
-            if (!allEndingSale.isEmpty()) {
-                for (Sale sale : allEndingSale) {
-                    List<Product> products = productRepository.getByProductBySaleId(sale.getId());
-                    if (!products.isEmpty()) {
-                        for (Product product : products) {
-                            updateProductPrice(product, sale, "End");
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Product updateProductPrice(Product product, Sale sale, String action) {
-        if (action.equals("Start")) {
-            BigDecimal originalPrice = product.getPrice();
-            if (sale.getSaleInNumber() != null) {
-                BigDecimal updatedSalePrice = originalPrice.subtract(sale.getSaleInNumber());
-                product.setSalePrice(updatedSalePrice);
-            } else if (sale.getSaleInPercent() != null) {
-                BigDecimal salePrice = calculatePercentageOfAmount(originalPrice, sale.getSaleInPercent());
-                product.setSalePrice(salePrice);
-            }
-            return product;
-        } else {
-            productRepository.updateSaleToNullBySaleID(sale.getId());
-            productRepository.updateSalePrice(product.getId(), null);
-            return null;
-        }
-    }
-
-    public static BigDecimal calculatePercentageOfAmount(BigDecimal amount, int percentage) {
-        if (amount.compareTo(BigDecimal.ZERO) == 0) {
-            throw new IllegalArgumentException("Amount cannot be zero.");
-        }
-
-        BigDecimal percentageDecimal = BigDecimal.valueOf(100 - percentage);
-        BigDecimal result = amount.multiply(percentageDecimal.divide(new BigDecimal("100")));
-
-        return result.setScale(2, BigDecimal.ROUND_HALF_UP);
-    }
 }
