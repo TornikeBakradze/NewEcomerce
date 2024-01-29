@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -48,6 +49,9 @@ public class Product {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Subcategory subcategory;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "product")
+    private Set<Image> images;
 
     @CreationTimestamp
     @Column(updatable = false)
