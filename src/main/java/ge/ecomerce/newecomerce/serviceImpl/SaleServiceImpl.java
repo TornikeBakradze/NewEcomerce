@@ -6,23 +6,18 @@ import ge.ecomerce.newecomerce.exception.DataNotFoundException;
 import ge.ecomerce.newecomerce.model.request.SaleModel;
 import ge.ecomerce.newecomerce.repository.ProductRepository;
 import ge.ecomerce.newecomerce.repository.SaleRepository;
+import ge.ecomerce.newecomerce.runnable.EndSale;
 import ge.ecomerce.newecomerce.runnable.StartSale;
 import ge.ecomerce.newecomerce.service.SaleService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +28,9 @@ public class SaleServiceImpl implements SaleService {
     private final SaleRepository saleRepository;
     private final ProductRepository productRepository;
 
-
     @Override
     public Sale addNewSale(SaleModel saleModel) {
         try {
-            List<Long> salesId = new ArrayList<>();
             Sale sale = Sale.builder()
                     .saleInNumber(saleModel.getSaleInNumber())
                     .saleInPercent(saleModel.getSaleInPercent())
@@ -53,12 +46,25 @@ public class SaleServiceImpl implements SaleService {
                     productRepository.save(product);
                 }
             }
-            salesId.add(savedSale.getId());
-            Instant instant = Instant.now().plusSeconds(Duration.between(LocalDateTime.now(), savedSale.getStartDate()).getSeconds());
+
+
+            StartSale startSale = new StartSale(productRepository, saleRepository);
+            startSale.setSaleId(savedSale.getId());
+            Instant instantForStartSale = Instant.now().plusSeconds(Duration.between(LocalDateTime.now(), savedSale.getStartDate()).getSeconds());
             taskScheduler.schedule(
-                    new StartSale(productRepository, saleRepository, salesId),
-                    instant
+                    startSale,
+                    instantForStartSale
             );
+
+
+            EndSale endSale = new EndSale(productRepository, saleRepository);
+            endSale.setSaleId(savedSale.getId());
+            Instant instantForEndSale = Instant.now().plusSeconds(Duration.between(LocalDateTime.now(), savedSale.getEndDate()).getSeconds());
+            taskScheduler.schedule(
+                    endSale,
+                    instantForEndSale
+            );
+
             return savedSale;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -109,31 +115,5 @@ public class SaleServiceImpl implements SaleService {
             throw new RuntimeException(e);
         }
     }
-
-
-//    @Scheduled(fixedRate = 60 * 1000)
-//    @Transactional
-//    public void endSale() {
-//        try {
-//            LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
-//            LocalDateTime endTime = LocalDateTime.now().plusMinutes(1);
-//
-//            List<Sale> allEndingSale = saleRepository.findAllEndingSale(startTime, endTime);
-//
-//            if (!allEndingSale.isEmpty()) {
-//                for (Sale sale : allEndingSale) {
-//                    List<Product> products = productRepository.getByProductBySaleId(sale.getId());
-//                    if (!products.isEmpty()) {
-//                        for (Product product : products) {
-//                            updateProductPrice(product, sale, "End");
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
 
 }

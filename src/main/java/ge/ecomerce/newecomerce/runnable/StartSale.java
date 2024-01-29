@@ -6,6 +6,7 @@ import ge.ecomerce.newecomerce.exception.DataNotFoundException;
 import ge.ecomerce.newecomerce.repository.ProductRepository;
 import ge.ecomerce.newecomerce.repository.SaleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -15,20 +16,17 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Setter
 public class StartSale implements Runnable {
 
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
 
-    private final List<Long> saleId;
+    private Long saleId;
 
     @Override
     public void run() {
-        System.out.println("=====================================");
-        System.out.println(LocalDateTime.now());
-        System.out.println(Thread.currentThread().getName());
-        System.out.println("=====================================");
-        Sale sale = saleRepository.findById(saleId.get(0)).orElseThrow(() -> new DataNotFoundException("Sale not found"));
+        Sale sale = saleRepository.findById(saleId).orElseThrow(() -> new DataNotFoundException("Sale not found"));
         startSale(sale);
     }
 
@@ -40,7 +38,6 @@ public class StartSale implements Runnable {
                 long seconds = Duration.between(LocalDateTime.now(), sale.getStartDate()).getSeconds();
                 Thread.sleep(seconds * 1000);
             }
-            System.out.println("=====================================");
             System.out.println(LocalDateTime.now());
             List<Product> products = productRepository.getByProductBySaleId(sale.getId());
             if (!products.isEmpty()) {
@@ -55,7 +52,7 @@ public class StartSale implements Runnable {
     }
 
 
-    public Product updateProductPrice(Product product, Sale sale) {
+    public static Product updateProductPrice(Product product, Sale sale) {
         BigDecimal originalPrice = product.getPrice();
         if (sale.getSaleInNumber() != null) {
             BigDecimal updatedSalePrice = originalPrice.subtract(sale.getSaleInNumber());
@@ -67,7 +64,7 @@ public class StartSale implements Runnable {
         return product;
     }
 
-    public BigDecimal calculatePercentageOfAmount(BigDecimal amount, int percentage) {
+    private static BigDecimal calculatePercentageOfAmount(BigDecimal amount, int percentage) {
         if (amount.compareTo(BigDecimal.ZERO) == 0) {
             throw new IllegalArgumentException("Amount cannot be zero.");
         }
@@ -75,4 +72,5 @@ public class StartSale implements Runnable {
         BigDecimal result = amount.multiply(percentageDecimal.divide(new BigDecimal("100")));
         return result.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
+
 }

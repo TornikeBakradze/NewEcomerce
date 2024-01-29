@@ -13,6 +13,7 @@ import ge.ecomerce.newecomerce.repository.CategoryRepository;
 import ge.ecomerce.newecomerce.repository.ProductRepository;
 import ge.ecomerce.newecomerce.repository.SaleRepository;
 import ge.ecomerce.newecomerce.repository.SubcategoryRepository;
+import ge.ecomerce.newecomerce.runnable.StartSale;
 import ge.ecomerce.newecomerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -309,7 +311,14 @@ public class ProductServiceImpl implements ProductService {
             Product product = productRepository.getByProductId(productID).orElseThrow(() -> new DataNotFoundException("Product not found"));
             Sale sale = saleRepository.findById(saleID).orElseThrow(() -> new DataNotFoundException("Sale not found"));
             product.setSale(sale);
-            return productRepository.save(product);
+
+            int i = sale.getStartDate().compareTo(LocalDateTime.now());
+            if (i < 0) {
+                Product updatedProductPrice = StartSale.updateProductPrice(product, sale);
+                return productRepository.save(updatedProductPrice);
+            } else {
+                return productRepository.save(product);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
