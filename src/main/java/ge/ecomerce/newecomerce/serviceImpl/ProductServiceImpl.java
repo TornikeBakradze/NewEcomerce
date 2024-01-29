@@ -44,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
                     productModel.getProductNameAndDescriptionModel();
             Product product = Product.builder()
                     .name(productDetails.getName())
+                    .brand(productDetails.getBrand())
                     .price(productDetails.getPrice())
                     .quantity(productDetails.getQuantity())
                     .details(productDetails.getDetails())
