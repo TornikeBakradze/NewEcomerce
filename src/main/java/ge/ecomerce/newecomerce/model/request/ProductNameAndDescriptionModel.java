@@ -13,6 +13,10 @@ public class ProductNameAndDescriptionModel {
     @Pattern(regexp = "^[a-zA-Z0-9 -]+$", message = "Product name must contain only letters and number")
     private String name;
 
+    @Size(min = 2, max = 50, message = "Product name must be 2 to 50")
+    @Pattern(regexp = "^[a-zA-Z0-9 -]+$", message = "Product name must contain only letters and number")
+    private String brand;
+
     @NotNull(message = "Product price can't be null")
     @Min(value = 1, message = "Price can't be negative number")
     private BigDecimal price;

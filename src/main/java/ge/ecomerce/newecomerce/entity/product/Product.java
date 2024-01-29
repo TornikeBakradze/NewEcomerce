@@ -27,6 +27,8 @@ public class Product {
     @Column(unique = true)
     private String name;
 
+    private String brand;
+
     private BigDecimal price;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

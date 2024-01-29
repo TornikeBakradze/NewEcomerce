@@ -71,6 +71,7 @@ public class ProductServiceImpl implements ProductService {
             for (ProductNameAndDescriptionModel productModel : productNameAndDescriptionModelList) {
                 Product product = Product.builder()
                         .name(productModel.getName())
+                        .brand(productModel.getBrand())
                         .price(productModel.getPrice())
                         .quantity(productModel.getQuantity())
                         .details(productModel.getDetails())
