@@ -3,7 +3,6 @@ package ge.ecomerce.newecomerce.entity.product;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import ge.ecomerce.newecomerce.entity.category.Subcategory;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -50,7 +49,7 @@ public class Product {
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Subcategory subcategory;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
     private Set<Image> images;
 
     @CreationTimestamp

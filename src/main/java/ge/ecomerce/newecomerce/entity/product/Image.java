@@ -1,8 +1,10 @@
 package ge.ecomerce.newecomerce.entity.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -13,13 +15,14 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String imageUrl;
-
     private String name;
 
     private String type;
 
     private String filePath;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean isMainPhoto;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JsonIgnore
