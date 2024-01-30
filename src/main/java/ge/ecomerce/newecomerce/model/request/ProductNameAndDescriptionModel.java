@@ -10,11 +10,11 @@ public class ProductNameAndDescriptionModel {
     @NotNull(message = "Product name must no be null")
     @NotBlank(message = "Product name must not be blank")
     @Size(min = 2, max = 50, message = "Product name must be 2 to 50")
-    @Pattern(regexp = "^[a-zA-Z0-9 -]+$", message = "Product name must contain only letters and number")
+    @Pattern(regexp = "^[a-zA-Z0-9 -']+$", message = "Product name must contain only letters and number")
     private String name;
 
     @Size(min = 2, max = 50, message = "Product name must be 2 to 50")
-    @Pattern(regexp = "^[a-zA-Z0-9 -]+$", message = "Product name must contain only letters and number")
+    @Pattern(regexp = "^[a-zA-Z0-9 -']+$", message = "Product Brand must contain only letters and number")
     private String brand;
 
     @NotNull(message = "Product price can't be null")
