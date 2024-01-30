@@ -23,6 +23,11 @@ public class ImageController {
         return new ResponseEntity<>(imageService.uploadImages(files, productID), HttpStatus.OK);
     }
 
+    @DeleteMapping("/deleteImage/{imageID}")
+    public ResponseEntity<String> uploadImage(@PathVariable("imageID") Long imageID) {
+        return new ResponseEntity<>(imageService.deleteImage(imageID), HttpStatus.OK);
+    }
+
     @PostMapping("/uploadMainImage/{productID}")
     public ResponseEntity<String> uploadMainImage(@RequestParam("image") MultipartFile file,
                                                   @PathVariable("productID") Long productID) {

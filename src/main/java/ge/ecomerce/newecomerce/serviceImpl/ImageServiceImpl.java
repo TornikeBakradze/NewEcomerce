@@ -27,7 +27,7 @@ public class ImageServiceImpl implements ImageService {
     private final ProductRepository productRepository;
     private final ImageRepository imageRepository;
 
-    private static final String imageFolderBasePath = "C:/Users/dell/Desktop/image/%s/%s";
+    private static final String imageFolderBasePath = "C:/Users/t.bakradze/Desktop/image/%s/%s";
 
     @Override
     public byte[] downloadImage(Long imageID) {
@@ -35,6 +35,19 @@ public class ImageServiceImpl implements ImageService {
         Path path = Paths.get(image.getFilePath());
         try {
             return Files.readAllBytes(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String deleteImage(Long imageID) {
+        Image image = imageRepository.findById(imageID).orElseThrow(() -> new DataNotFoundException("Image not found"));
+        Path path = Paths.get(image.getFilePath());
+        try {
+            Files.delete(path);
+            imageRepository.delete(image);
+            return "Image deleted successfully.";
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -62,6 +75,14 @@ public class ImageServiceImpl implements ImageService {
     public String uploadMainImage(MultipartFile file, Long id) {
         try {
             Product product = productRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Product not found"));
+            if (!product.getImages().isEmpty()) {
+                for (Image image : product.getImages()) {
+                    if (image.getIsMainPhoto() != null && image.getIsMainPhoto()) {
+                        image.setIsMainPhoto(null);
+                        imageRepository.save(image);
+                    }
+                }
+            }
             Path imageFolderPath = Paths.get
                     (String.format(imageFolderBasePath, product.getSubcategory().getName(), product.getName()));
             if (!Files.exists(imageFolderPath)) {

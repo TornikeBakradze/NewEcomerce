@@ -10,4 +10,6 @@ public interface ImageService {
     String uploadMainImage(MultipartFile file, Long id);
 
     byte[] downloadImage(Long imageID);
+
+    String deleteImage(Long imageID);
 }
