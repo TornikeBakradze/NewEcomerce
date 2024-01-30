@@ -1,7 +1,7 @@
 package ge.ecomerce.newecomerce.model.request;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import ge.ecomerce.newecomerce.anotation.ListValidation.ListOfStringAnnotation;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 public class SubcategoriesModel {
 
-    @NotEmpty(message = "SubCategories list must no be empty")
+    @ListOfStringAnnotation
     private List<String> subCategoryName;
 
     @NotNull(message = "categoryID must not be null")

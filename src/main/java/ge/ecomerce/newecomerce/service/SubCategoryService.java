@@ -20,5 +20,5 @@ public interface SubCategoryService {
 
     String deleteSubcategoryByID(Long id);
 
-    String deleteAll(Long categoryID);
+    String deleteAllByCategoryID(Long categoryID);
 }

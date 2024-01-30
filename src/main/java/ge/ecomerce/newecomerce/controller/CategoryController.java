@@ -43,7 +43,7 @@ public class CategoryController {
 
     @PutMapping(CATEGORY_BASE_URL + "/update")
     public ResponseEntity<Category> update(@RequestParam Long categoryID,
-                                           @RequestBody CategoryModel categoryModel) {
+                                           @RequestBody @Validated  CategoryModel categoryModel) {
         return new ResponseEntity<>(categoryService.updateCategory(categoryID, categoryModel), HttpStatus.OK);
     }
 

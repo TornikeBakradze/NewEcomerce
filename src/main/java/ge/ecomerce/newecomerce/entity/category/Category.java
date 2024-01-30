@@ -38,7 +38,7 @@ public class Category {
     @Column(nullable = false, unique = true)
     @NotBlank(message = "Category name must not be null")
     @Size(max = 50, message = "Category name size must be 0 to 50")
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Subcategory name must contain only letters")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Category name must contain only letters")
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)

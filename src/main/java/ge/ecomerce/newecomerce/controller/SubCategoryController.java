@@ -4,6 +4,7 @@ import ge.ecomerce.newecomerce.entity.category.Subcategory;
 import ge.ecomerce.newecomerce.model.request.SubcategoriesModel;
 import ge.ecomerce.newecomerce.model.request.SubcategoryModel;
 import ge.ecomerce.newecomerce.service.SubCategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class SubCategoryController {
 
     @DeleteMapping(SUBCATEGORY_BASE_URL + "/deleteByCategoryId/{categoryID}")
     public ResponseEntity<String> deleteByCategoryId(@PathVariable("categoryID") Long categoryID) {
-        return new ResponseEntity<>(subCategoryService.deleteAll(categoryID), HttpStatus.OK);
+        return new ResponseEntity<>(subCategoryService.deleteAllByCategoryID(categoryID), HttpStatus.OK);
     }
 
     @PutMapping(SUBCATEGORY_BASE_URL + "/update/{subCategoryID}")

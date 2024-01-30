@@ -114,28 +114,24 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         try {
             Subcategory subcategory =
                     subcategoryRepository.findById(id).orElseThrow(() ->
-                            new DataNotFoundException("Category not found"));
+                            new DataNotFoundException("SubCategory not found"));
             subcategoryRepository.delete(subcategory);
-            return String.format("Category with %s id deleted successfully", id);
-        } catch (DataNotFoundException e) {
-            throw new DataNotFoundException(e.getMessage());
+            return String.format("SubCategory with %s id deleted successfully", id);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public String deleteAll(Long categoryID) {
+    public String deleteAllByCategoryID(Long categoryID) {
         try {
-            Category subcategory =
+            Category category =
                     categoryRepository.findById(categoryID).orElseThrow(() ->
                             new DataNotFoundException("Category  not found"));
-            subcategoryRepository.deleteByCategoryId(subcategory.getId());
-            return "Deleted all category";
-        } catch (DataNotFoundException e) {
-            throw new DataNotFoundException(e.getMessage());
+            subcategoryRepository.deleteByCategoryId(category.getId());
+            return String.format("Deleted all Subcategory of %s", category.getName());
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 

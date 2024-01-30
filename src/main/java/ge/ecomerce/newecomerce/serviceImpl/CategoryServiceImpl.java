@@ -73,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new DataIntegrityViolationException
                     (String.format("SubCategory with name %s already exist", globalCategoryName));
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
