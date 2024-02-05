@@ -1,12 +1,14 @@
 package ge.ecomerce.newecomerce.controller;
 
 import ge.ecomerce.newecomerce.exception.DataNotFoundException;
+import ge.ecomerce.newecomerce.exception.UserAlreadyExistException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,5 +56,17 @@ public class ExceptionController {
         }
         log.error(errorMessage);
         return ResponseEntity.badRequest().body(errorMessage);
+    }
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    ResponseEntity<String> serAlreadyExistException(UserAlreadyExistException e) {
+        log.error("User already exist exception", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.ALREADY_REPORTED);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    ResponseEntity<String> badCredentialsException(BadCredentialsException e) {
+        log.error("badCredentialsException", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }

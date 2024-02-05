@@ -70,7 +70,9 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers(new MvcRequestMatcher(introspector, "/swagger-ui/index.html/**")).permitAll()
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/swagger-ui/**")).permitAll()
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/auth/**")).permitAll()
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/v3/api-docs/**")).permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
@@ -102,4 +104,5 @@ public class SecurityConfiguration {
         jwtConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtConverter;
     }
+
 }

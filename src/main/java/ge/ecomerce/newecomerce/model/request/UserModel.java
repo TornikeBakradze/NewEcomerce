@@ -30,5 +30,6 @@ public class UserModel {
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",message = "Bad email")
     private String email;
 
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 }
