@@ -1,6 +1,7 @@
 package ge.ecomerce.newecomerce.service;
 
 import ge.ecomerce.newecomerce.entity.user.Users;
+import ge.ecomerce.newecomerce.model.request.PasswordChangeModel;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface UserService {
 
     String updateUserEmail(Long userId, String email);
 
-    String updateUserPassword(Long userId, String password);
+    String updateUserPassword(Long userId, PasswordChangeModel passwordChangeModel);
 
 
     String deleteUser(Long userId);

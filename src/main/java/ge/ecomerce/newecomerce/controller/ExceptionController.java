@@ -1,6 +1,7 @@
 package ge.ecomerce.newecomerce.controller;
 
 import ge.ecomerce.newecomerce.exception.DataNotFoundException;
+import ge.ecomerce.newecomerce.exception.UpdatePasswordException;
 import ge.ecomerce.newecomerce.exception.UserAlreadyExistException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -60,13 +61,19 @@ public class ExceptionController {
 
     @ExceptionHandler(UserAlreadyExistException.class)
     ResponseEntity<String> serAlreadyExistException(UserAlreadyExistException e) {
-        log.error("User already exist exception", e.getMessage());
+        log.error("User already exist exception: {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.ALREADY_REPORTED);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     ResponseEntity<String> badCredentialsException(BadCredentialsException e) {
-        log.error("badCredentialsException", e.getMessage());
+        log.error("badCredentialsException: {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UpdatePasswordException.class)
+    ResponseEntity<String> updatePasswordException(UpdatePasswordException e) {
+        log.error("Update Passwor Exception: {}", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

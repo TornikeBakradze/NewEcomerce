@@ -1,12 +1,14 @@
 package ge.ecomerce.newecomerce.controller;
 
 import ge.ecomerce.newecomerce.entity.user.Users;
+import ge.ecomerce.newecomerce.model.request.PasswordChangeModel;
 import ge.ecomerce.newecomerce.service.UserService;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,12 +64,19 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUserLastname(userID, userLastname), HttpStatus.OK);
     }
 
-    @PutMapping("/updateUserPassword/{userID}/{userPassword}")
+    @PutMapping("/updateUseLastname/{userID}/{userEmail}")
+    public ResponseEntity<String> updateEmail(@PathVariable("userID") Long userID,
+                                              @PathVariable("userEmail")
+                                              @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Bad email")
+                                              @Size(min = 2, max = 50, message = "User name must be 2 to 50")
+                                              String userEmail) {
+        return new ResponseEntity<>(userService.updateUserEmail(userID, userEmail), HttpStatus.OK);
+    }
+
+    @PutMapping("/updateUserPassword/{userID}")
     public ResponseEntity<String> updateUsePassword(@PathVariable("userID") Long userID,
-                                                    @PathVariable("userPassword")
-                                                    @Size(min = 8, message = "Password must be at least 8 characters long")
-                                                    String userPassword) {
-        return new ResponseEntity<>(userService.updateUserPassword(userID, userPassword), HttpStatus.OK);
+                                                    @RequestBody @Validated PasswordChangeModel password) {
+        return new ResponseEntity<>(userService.updateUserPassword(userID, password), HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteUser/{userID}")

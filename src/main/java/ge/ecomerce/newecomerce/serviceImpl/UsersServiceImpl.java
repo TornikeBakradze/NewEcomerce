@@ -2,6 +2,8 @@ package ge.ecomerce.newecomerce.serviceImpl;
 
 import ge.ecomerce.newecomerce.entity.user.Users;
 import ge.ecomerce.newecomerce.exception.DataNotFoundException;
+import ge.ecomerce.newecomerce.exception.UpdatePasswordException;
+import ge.ecomerce.newecomerce.model.request.PasswordChangeModel;
 import ge.ecomerce.newecomerce.repository.UserRepository;
 import ge.ecomerce.newecomerce.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +70,7 @@ public class UsersServiceImpl implements UserService {
                     userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
             user.setName(name);
             userRepository.save(user);
-            return "Number add successfully";
+            return "Name updated successfully";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -81,7 +83,7 @@ public class UsersServiceImpl implements UserService {
                     userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
             user.setLastname(lastname);
             userRepository.save(user);
-            return "Number add successfully";
+            return "Lastname updated successfully";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -94,21 +96,29 @@ public class UsersServiceImpl implements UserService {
                     userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
             user.setEmail(email);
             userRepository.save(user);
-            return "Number add successfully";
+            return "Email updated successfully";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public String updateUserPassword(Long userId, String password) {
+    public String updateUserPassword(Long userId, PasswordChangeModel password) {
         try {
             Users user =
                     userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
-            String encodedPassword = passwordEncoder.encode(password);
+            String currentPassword = user.getPassword();
+            if (!currentPassword.equals(password.getCurrentPassword())) {
+                throw new UpdatePasswordException("Current password is incorrect");
+            }
+            if (!password.getNewPassword().equals(password.getConfirmPassword())) {
+                throw new UpdatePasswordException("Passwords do not match");
+            }
+
+            String encodedPassword = passwordEncoder.encode(password.getNewPassword());
             user.setPassword(encodedPassword);
             userRepository.save(user);
-            return "Number add successfully";
+            return "Password updated successfully";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -120,7 +130,7 @@ public class UsersServiceImpl implements UserService {
             Users user =
                     userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
             userRepository.delete(user);
-            return "User acaunt is deleted";
+            return "User account is deleted";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
