@@ -64,7 +64,7 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUserLastname(userID, userLastname), HttpStatus.OK);
     }
 
-    @PutMapping("/updateUseLastname/{userID}/{userEmail}")
+    @PutMapping("/updateUseEmail/{userID}/{userEmail}")
     public ResponseEntity<String> updateEmail(@PathVariable("userID") Long userID,
                                               @PathVariable("userEmail")
                                               @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Bad email")

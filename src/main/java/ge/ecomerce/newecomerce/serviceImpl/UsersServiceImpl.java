@@ -108,7 +108,7 @@ public class UsersServiceImpl implements UserService {
             Users user =
                     userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
             String currentPassword = user.getPassword();
-            if (!currentPassword.equals(password.getCurrentPassword())) {
+            if (!passwordEncoder.matches(password.getCurrentPassword(),currentPassword)) {
                 throw new UpdatePasswordException("Current password is incorrect");
             }
             if (!password.getNewPassword().equals(password.getConfirmPassword())) {
