@@ -8,11 +8,15 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import ge.ecomerce.newecomerce.utils.RSAKeyProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.aop.Advisor;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -52,7 +56,6 @@ public class SecurityConfiguration {
         return new ProviderManager(daoProvider);
     }
 
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().
@@ -73,6 +76,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(new MvcRequestMatcher(introspector, "/swagger-ui/**")).permitAll()
                                 .requestMatchers(new MvcRequestMatcher(introspector, "/auth/**")).permitAll()
                                 .requestMatchers(new MvcRequestMatcher(introspector, "/v3/api-docs/**")).permitAll()
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/category/**")).hasAnyRole("ADMIN", "STAFF")
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
