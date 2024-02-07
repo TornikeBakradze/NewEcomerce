@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SubCategoryController {
 
-    private static final String SUBCATEGORY_BASE_URL = "subCategory";
+    private static final String SUBCATEGORY_BASE_URL = "/subCategory";
 
 
     private final SubCategoryService subCategoryService;

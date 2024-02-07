@@ -18,42 +18,41 @@ import java.util.List;
 @RequestMapping("/category")
 public class CategoryController {
 
-    private static final String CATEGORY_BASE_URL = "/s";
 
     private final CategoryService categoryService;
 
-    @GetMapping(CATEGORY_BASE_URL + "/getAllCategory")
+    @GetMapping("/getAllCategory")
     public ResponseEntity<List<Category>> getAllCategory() {
         return new ResponseEntity<>(categoryService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping(CATEGORY_BASE_URL + "/{categoryID}")
+    @GetMapping("/{categoryID}")
     public ResponseEntity<Category> getById(@PathVariable("categoryID") Long categoryID) {
         return new ResponseEntity<>(categoryService.getById(categoryID), HttpStatus.OK);
     }
 
-    @GetMapping(CATEGORY_BASE_URL + "/getCategoryWithSubCategoryByCategoryID")
+    @GetMapping("/getCategoryWithSubCategoryByCategoryID")
     public ResponseEntity<CategoryWithSubcategories> getCategoryWithSubcategory(@RequestParam Long categoryID) {
         return new ResponseEntity<>(categoryService.categoryWithSubcategoryByCategoryID(categoryID), HttpStatus.OK);
     }
 
-    @GetMapping(CATEGORY_BASE_URL + "/getCategoryWithSubCategoryByCategories")
+    @GetMapping( "/getCategoryWithSubCategoryByCategories")
     public ResponseEntity<List<CategoryWithSubcategories>> getCategoryWithSubcategories() {
         return new ResponseEntity<>(categoryService.categoryWithSubcategoryByCategories(), HttpStatus.OK);
     }
 
-    @PutMapping(CATEGORY_BASE_URL + "/update")
+    @PutMapping( "/update")
     public ResponseEntity<Category> update(@RequestParam Long categoryID,
                                            @RequestBody CategoryModel categoryModel) {
         return new ResponseEntity<>(categoryService.updateCategory(categoryID, categoryModel), HttpStatus.OK);
     }
 
-    @PostMapping(CATEGORY_BASE_URL + "/save")
+    @PostMapping("/save")
     public ResponseEntity<Category> saveNewCategory(@RequestBody @Validated CategoryModel categoryModel) {
         return new ResponseEntity<>(categoryService.saveCategory(categoryModel), HttpStatus.CREATED);
     }
 
-    @PostMapping(CATEGORY_BASE_URL + "/saveCategories")
+    @PostMapping( "/saveCategories")
     public ResponseEntity<List<Category>> saveCategories(@RequestBody @Validated CategoriesModel categoriesModel) {
         return new ResponseEntity<>(categoryService.saveCategories(categoriesModel), HttpStatus.OK);
     }
