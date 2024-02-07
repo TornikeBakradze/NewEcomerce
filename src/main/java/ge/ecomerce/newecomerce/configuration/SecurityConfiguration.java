@@ -76,7 +76,10 @@ public class SecurityConfiguration {
                                 .requestMatchers(new MvcRequestMatcher(introspector, "/swagger-ui/**")).permitAll()
                                 .requestMatchers(new MvcRequestMatcher(introspector, "/auth/**")).permitAll()
                                 .requestMatchers(new MvcRequestMatcher(introspector, "/v3/api-docs/**")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(introspector, "/category/**")).hasAnyRole("ADMIN", "STAFF")
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/category/delete/**")).hasRole("ADMIN")
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/category/deleteAll")).hasRole("ADMIN")
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/category/deleteAll")).hasRole("ADMIN")
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/category/s/**")).hasAnyRole("ADMIN", "STAFF")
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

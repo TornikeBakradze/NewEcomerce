@@ -15,9 +15,10 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/category")
 public class CategoryController {
 
-    private static final String CATEGORY_BASE_URL = "/category";
+    private static final String CATEGORY_BASE_URL = "/s";
 
     private final CategoryService categoryService;
 
@@ -57,12 +58,12 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.saveCategories(categoriesModel), HttpStatus.OK);
     }
 
-    @DeleteMapping(CATEGORY_BASE_URL + "/delete/{categoryID}")
+    @DeleteMapping("/delete/{categoryID}")
     public ResponseEntity<String> delete(@PathVariable("categoryID") Long categoryID) {
         return new ResponseEntity<>(categoryService.delete(categoryID), HttpStatus.OK);
     }
 
-    @DeleteMapping(CATEGORY_BASE_URL + "/deleteAll")
+    @DeleteMapping( "/deleteAll")
     public ResponseEntity<String> deleteAll() {
         return new ResponseEntity<>(categoryService.deleteAll(), HttpStatus.OK);
     }
